@@ -1,0 +1,22 @@
+{
+  "id": "halo",
+  "name": "Halo",
+  "category": "hat",
+  "tier": "rare",
+  "pixels": [
+    { "x": 17, "y": 10, "color": "#ffd700" },
+    { "x": 18, "y": 10, "color": "#ffed4a" },
+    { "x": 19, "y": 10, "color": "#ffd700" },
+    { "x": 20, "y": 10, "color": "#ffed4a" },
+    { "x": 21, "y": 10, "color": "#ffd700" },
+    { "x": 22, "y": 10, "color": "#ffed4a" },
+    { "x": 16, "y": 11, "color": "#ffed4a" },
+    { "x": 23, "y": 11, "color": "#ffd700" },
+    { "x": 17, "y": 12, "color": "#ffd700" },
+    { "x": 18, "y": 12, "color": "#ffed4a" },
+    { "x": 19, "y": 12, "color": "#ffd700" },
+    { "x": 20, "y": 12, "color": "#ffed4a" },
+    { "x": 21, "y": 12, "color": "#ffd700" },
+    { "x": 22, "y": 12, "color": "#ffed4a" }
+  ]
+}

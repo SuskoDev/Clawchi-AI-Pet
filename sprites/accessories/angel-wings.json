@@ -1,0 +1,37 @@
+{
+  "id": "angel-wings",
+  "name": "Angel Wings",
+  "category": "back",
+  "tier": "legendary",
+  "pixels": [
+    { "x": 8, "y": 17, "color": "#f0f0f0" },
+    { "x": 9, "y": 17, "color": "#ffffff" },
+    { "x": 6, "y": 18, "color": "#ffffff" },
+    { "x": 7, "y": 18, "color": "#f0f0f0" },
+    { "x": 8, "y": 18, "color": "#ffffff" },
+    { "x": 4, "y": 19, "color": "#f0f0f0" },
+    { "x": 5, "y": 19, "color": "#ffffff" },
+    { "x": 6, "y": 19, "color": "#ffffff" },
+    { "x": 7, "y": 19, "color": "#f0f0f0" },
+    { "x": 4, "y": 20, "color": "#ffffff" },
+    { "x": 5, "y": 20, "color": "#f0f0f0" },
+    { "x": 6, "y": 20, "color": "#ffffff" },
+    { "x": 5, "y": 21, "color": "#ffffff" },
+    { "x": 6, "y": 21, "color": "#f0f0f0" },
+
+    { "x": 30, "y": 17, "color": "#ffffff" },
+    { "x": 31, "y": 17, "color": "#f0f0f0" },
+    { "x": 31, "y": 18, "color": "#ffffff" },
+    { "x": 32, "y": 18, "color": "#f0f0f0" },
+    { "x": 33, "y": 18, "color": "#ffffff" },
+    { "x": 32, "y": 19, "color": "#f0f0f0" },
+    { "x": 33, "y": 19, "color": "#ffffff" },
+    { "x": 34, "y": 19, "color": "#ffffff" },
+    { "x": 35, "y": 19, "color": "#f0f0f0" },
+    { "x": 33, "y": 20, "color": "#ffffff" },
+    { "x": 34, "y": 20, "color": "#f0f0f0" },
+    { "x": 35, "y": 20, "color": "#ffffff" },
+    { "x": 33, "y": 21, "color": "#f0f0f0" },
+    { "x": 34, "y": 21, "color": "#ffffff" }
+  ]
+}

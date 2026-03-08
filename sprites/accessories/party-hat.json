@@ -1,0 +1,33 @@
+{
+  "id": "party-hat",
+  "name": "Party Hat",
+  "category": "hat",
+  "tier": "common",
+  "pixels": [
+    { "x": 16, "y": 14, "color": "#ff6b6b" },
+    { "x": 17, "y": 14, "color": "#4ecdc4" },
+    { "x": 18, "y": 14, "color": "#ffe66d" },
+    { "x": 19, "y": 14, "color": "#ff6b6b" },
+    { "x": 20, "y": 14, "color": "#4ecdc4" },
+    { "x": 21, "y": 14, "color": "#ffe66d" },
+    { "x": 22, "y": 14, "color": "#ff6b6b" },
+    { "x": 23, "y": 14, "color": "#4ecdc4" },
+    { "x": 17, "y": 13, "color": "#ffe66d" },
+    { "x": 18, "y": 13, "color": "#ff6b6b" },
+    { "x": 19, "y": 13, "color": "#4ecdc4" },
+    { "x": 20, "y": 13, "color": "#ffe66d" },
+    { "x": 21, "y": 13, "color": "#ff6b6b" },
+    { "x": 22, "y": 13, "color": "#4ecdc4" },
+    { "x": 18, "y": 12, "color": "#4ecdc4" },
+    { "x": 19, "y": 12, "color": "#ffe66d" },
+    { "x": 20, "y": 12, "color": "#ff6b6b" },
+    { "x": 21, "y": 12, "color": "#4ecdc4" },
+    { "x": 19, "y": 11, "color": "#ff6b6b" },
+    { "x": 20, "y": 11, "color": "#ffe66d" },
+    { "x": 19, "y": 10, "color": "#4ecdc4" },
+    { "x": 20, "y": 10, "color": "#ff6b6b" },
+    { "x": 19, "y": 9, "color": "#ffe66d" },
+    { "x": 19, "y": 8, "color": "#ffffff" },
+    { "x": 20, "y": 8, "color": "#ffffff" }
+  ]
+}

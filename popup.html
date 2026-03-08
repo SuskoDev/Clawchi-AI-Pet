@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=400, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="popup.css">
+  <title>Clawchi</title>
+</head>
+<body>
+  <!-- Underwater background -->
+  <div id="underwater-bg"></div>
+
+  <!-- Main container -->
+  <div id="app">
+    <!-- Top toolbar: window btn + XP bar + admin/settings -->
+    <div id="toolbar">
+      <button id="btn-window" class="toolbar-btn" title="Open in window">
+        <svg viewBox="0 0 10 9" width="14" height="14" shape-rendering="crispEdges" fill="currentColor">
+          <rect x="0" y="0" width="10" height="9"/>
+          <rect x="1" y="3" width="8" height="5" fill="#000" opacity="0.35"/>
+          <rect x="1" y="1" width="1" height="1" fill="#000" opacity="0.35"/>
+          <rect x="3" y="1" width="1" height="1" fill="#000" opacity="0.35"/>
+        </svg>
+      </button>
+
+      <div id="xp-bar-container">
+        <span id="level-display">LV.1</span>
+        <div id="xp-bar-track">
+          <div id="xp-bar-fill"></div>
+        </div>
+      </div>
+
+      <div id="toolbar-right">
+        <button id="btn-admin" class="toolbar-btn" title="Admin (debug)">
+          <svg viewBox="0 0 9 9" width="14" height="14" shape-rendering="crispEdges" fill="currentColor">
+            <rect x="3" y="0" width="3" height="1"/>
+            <rect x="4" y="1" width="1" height="1"/>
+            <rect x="0" y="3" width="1" height="3"/>
+            <rect x="1" y="4" width="1" height="1"/>
+            <rect x="2" y="3" width="1" height="3"/>
+            <rect x="3" y="4" width="3" height="1"/>
+            <rect x="6" y="3" width="1" height="3"/>
+            <rect x="7" y="4" width="1" height="1"/>
+            <rect x="8" y="3" width="1" height="3"/>
+            <rect x="4" y="6" width="1" height="1"/>
+            <rect x="3" y="7" width="3" height="1"/>
+            <rect x="4" y="2" width="1" height="1"/>
+          </svg>
+        </button>
+        <button id="btn-settings" class="toolbar-btn" title="Settings">
+          <svg viewBox="0 0 9 9" width="14" height="14" shape-rendering="crispEdges" fill="currentColor">
+            <rect x="3" y="0" width="3" height="1"/>
+            <rect x="2" y="1" width="5" height="1"/>
+            <rect x="3" y="2" width="3" height="1"/>
+            <rect x="0" y="3" width="9" height="3"/>
+            <rect x="3" y="6" width="3" height="1"/>
+            <rect x="2" y="7" width="5" height="1"/>
+            <rect x="3" y="8" width="3" height="1"/>
+            <rect x="3" y="3" width="3" height="3" fill="#000" opacity="0.35"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Pet display + status text + name (all bob together) -->
+    <div id="pet-container">
+      <div id="pet-bobber">
+        <!-- Typewriter status text (bobs with crab) -->
+        <div id="status-bubble">
+          <span id="status-typewriter"></span>
+        </div>
+        <svg id="pet-svg" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"></svg>
+        <div id="pet-name-display" title="Click to rename">TAP TO NAME</div>
+      </div>
+    </div>
+
+    <!-- Nav bar with pixel icon buttons -->
+    <div id="nav-bar">
+      <button class="nav-btn" id="btn-accessories" title="Accessories">
+        <div class="nav-circle">
+          <svg viewBox="0 0 10 9" width="18" height="18" shape-rendering="crispEdges" fill="currentColor">
+            <rect x="3" y="0" width="4" height="1"/>
+            <rect x="0" y="1" width="3" height="1"/>
+            <rect x="7" y="1" width="3" height="1"/>
+            <rect x="0" y="2" width="2" height="1"/>
+            <rect x="8" y="2" width="2" height="1"/>
+            <rect x="1" y="3" width="8" height="1"/>
+            <rect x="2" y="4" width="6" height="1"/>
+            <rect x="3" y="5" width="4" height="4"/>
+          </svg>
+        </div>
+        <span class="nav-label">STYLE</span>
+      </button>
+      <button class="nav-btn" id="btn-stats" title="Stats">
+        <div class="nav-circle">
+          <svg viewBox="0 0 9 8" width="18" height="18" shape-rendering="crispEdges" fill="currentColor">
+            <rect x="1" y="0" width="2" height="1"/>
+            <rect x="6" y="0" width="2" height="1"/>
+            <rect x="0" y="1" width="4" height="1"/>
+            <rect x="5" y="1" width="4" height="1"/>
+            <rect x="0" y="2" width="9" height="2"/>
+            <rect x="1" y="4" width="7" height="1"/>
+            <rect x="2" y="5" width="5" height="1"/>
+            <rect x="3" y="6" width="3" height="1"/>
+            <rect x="4" y="7" width="1" height="1"/>
+          </svg>
+        </div>
+        <span class="nav-label">STATS</span>
+      </button>
+      <button class="nav-btn" id="btn-agents" title="Agents">
+        <div class="nav-circle">
+          <svg viewBox="0 0 10 8" width="18" height="18" shape-rendering="crispEdges" fill="currentColor">
+            <rect x="0" y="0" width="10" height="8"/>
+            <rect x="1" y="1" width="8" height="6" fill="#000" opacity="0.4"/>
+            <rect x="2" y="2" width="1" height="1"/>
+            <rect x="3" y="3" width="1" height="1"/>
+            <rect x="2" y="4" width="1" height="1"/>
+            <rect x="5" y="4" width="3" height="1"/>
+          </svg>
+        </div>
+        <span class="nav-label">AGENTS</span>
+      </button>
+      <button class="nav-btn" id="btn-log" title="Activity Log">
+        <div class="nav-circle">
+          <svg viewBox="0 0 8 10" width="18" height="18" shape-rendering="crispEdges" fill="currentColor">
+            <rect x="0" y="0" width="6" height="10"/>
+            <rect x="6" y="2" width="2" height="8"/>
+            <rect x="5" y="0" width="3" height="3"/>
+            <rect x="5" y="0" width="1" height="1" fill="#000" opacity="0.35"/>
+            <rect x="6" y="1" width="1" height="1" fill="#000" opacity="0.35"/>
+            <rect x="1" y="1" width="3" height="1" fill="#000" opacity="0.35"/>
+            <rect x="2" y="4" width="4" height="1" fill="#000" opacity="0.35"/>
+            <rect x="2" y="6" width="3" height="1" fill="#000" opacity="0.35"/>
+            <rect x="2" y="8" width="4" height="1" fill="#000" opacity="0.35"/>
+          </svg>
+        </div>
+        <span class="nav-label">LOG</span>
+      </button>
+    </div>
+
+    <!-- Customize panel (hidden by default) -->
+    <div id="accessory-panel" class="hidden">
+      <div id="color-picker-section">
+        <span class="customize-label">COLOR</span>
+        <div id="color-swatches">
+          <button class="color-swatch active" data-hue="0" style="background:#ef233c;" title="Red"></button>
+          <button class="color-swatch" data-hue="25" style="background:#ef8c23;" title="Orange"></button>
+          <button class="color-swatch" data-hue="50" style="background:#efcf23;" title="Gold"></button>
+          <button class="color-swatch" data-hue="120" style="background:#23ef3c;" title="Green"></button>
+          <button class="color-swatch" data-hue="175" style="background:#23efcf;" title="Cyan"></button>
+          <button class="color-swatch" data-hue="210" style="background:#2389ef;" title="Blue"></button>
+          <button class="color-swatch" data-hue="270" style="background:#8c23ef;" title="Purple"></button>
+          <button class="color-swatch" data-hue="330" style="background:#ef23a8;" title="Pink"></button>
+        </div>
+      </div>
+      <div class="customize-divider"></div>
+      <span class="customize-label">ACCESSORIES</span>
+      <div id="accessory-grid"></div>
+    </div>
+
+    <!-- Stats panel (hidden by default) -->
+    <div id="stats-panel" class="hidden">
+      <div class="stats-row">
+        <span class="stats-label">HUNGER</span>
+        <div class="stat-bar-track">
+          <div id="hunger-bar" class="stat-bar-fill hunger"></div>
+        </div>
+        <span id="hunger-value" class="stat-value">100%</span>
+      </div>
+      <div class="stats-row">
+        <span class="stats-label">HAPPINESS</span>
+        <div class="stat-bar-track">
+          <div id="happiness-bar" class="stat-bar-fill happiness"></div>
+        </div>
+        <span id="happiness-value" class="stat-value">100%</span>
+      </div>
+      <span class="stats-label" style="margin-top:4px;">FEED ME!</span>
+      <div id="food-grid"></div>
+      <div class="stats-row">
+        <span class="stats-label">STREAK</span>
+        <span id="streak-display" class="stat-value-wide">1 DAY</span>
+      </div>
+      <div class="stats-row">
+        <span class="stats-label">LEVEL</span>
+        <span id="stats-level" class="stat-value-wide">LV.1 — 0 XP</span>
+      </div>
+    </div>
+
+    <!-- Activity log panel (hidden by default) -->
+    <div id="log-panel" class="hidden">
+      <div id="log-list"></div>
+    </div>
+
+    <!-- Settings panel (reworked with sound controls) -->
+    <div id="settings-panel" class="hidden">
+      <div class="settings-row">
+        <span class="settings-label">BACKGROUND</span>
+        <div id="theme-buttons">
+          <button class="theme-chip active" data-theme="ocean">OCEAN</button>
+          <button class="theme-chip" data-theme="beach">BEACH</button>
+          <button class="theme-chip" data-theme="night">NIGHT</button>
+        </div>
+      </div>
+      <div class="settings-row">
+        <span class="settings-label">SOUND</span>
+        <div class="settings-inline">
+          <button id="sound-toggle" class="toggle-chip active">ON</button>
+          <input id="volume-slider" type="range" min="0" max="100" value="50" class="pixel-slider">
+          <span id="volume-display" class="settings-val">50%</span>
+        </div>
+      </div>
+      <div class="settings-row">
+        <span class="settings-label">AUTO-SLEEP</span>
+        <div class="settings-inline">
+          <button id="autosleep-toggle" class="toggle-chip active">ON</button>
+        </div>
+      </div>
+      <div class="settings-row">
+        <span class="settings-label">HYDRATION</span>
+        <div class="settings-inline">
+          <button id="hydration-toggle" class="toggle-chip active">ON</button>
+        </div>
+      </div>
+      <div class="settings-row">
+        <span class="settings-label">SUB-AGENTS</span>
+        <div class="settings-inline">
+          <button id="subagents-toggle" class="toggle-chip active">ON</button>
+        </div>
+      </div>
+
+      <!-- Desktop Mode Section -->
+      <div class="settings-divider"></div>
+      <div class="settings-row">
+        <span class="settings-label">DESKTOP MODE</span>
+        <div id="desktop-mode-info" class="desktop-info">
+          <p class="desktop-desc">SHOW YOUR CRAB ON WEB PAGES WHILE YOU BROWSE.</p>
+          <p class="desktop-desc">CLAWCHI NEVER READS OR COLLECTS ANY DATA. IT ONLY ADDS A SMALL VISUAL OVERLAY.</p>
+          <p class="desktop-desc desktop-opensource">
+            FULLY OPEN-SOURCE.
+            <a href="https://github.com/user/clawchi" target="_blank" rel="noopener" id="github-link" class="desktop-link">CHECK THE CODE</a>
+          </p>
+        </div>
+        <div class="settings-inline">
+          <button id="desktop-mode-toggle" class="toggle-chip desktop-toggle">ENABLE</button>
+        </div>
+      </div>
+
+      <!-- Per-site Special Effects (hidden when Desktop Mode is OFF) -->
+      <div id="site-effects-section" class="hidden">
+        <div class="settings-row">
+          <span class="settings-label">SPECIAL EFFECTS</span>
+          <div id="site-effects-list" class="site-effects-list">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Agent Link Section -->
+      <div class="settings-divider"></div>
+      <div class="settings-row">
+        <span class="settings-label">AGENT LINK</span>
+        <div class="agent-link-info">
+          <p class="desktop-desc">LET YOUR AI AGENT UPDATE YOUR CRAB'S STATUS. COPY THE PROMPT AND PASTE IT INTO YOUR AI.</p>
+        </div>
+        <div class="agent-link-id-row">
+          <span class="agent-link-id-label">YOUR ID:</span>
+          <span id="clawchi-id-display" class="agent-link-id">...</span>
+          <button id="relay-toggle" class="toggle-chip">OFF</button>
+        </div>
+        <div class="agent-link-buttons">
+          <button id="copy-agent-prompt" class="agent-link-copy" title="Copy prompt for your AI agent">COPY AGENT PROMPT</button>
+          <button id="open-relay-test" class="agent-link-copy-small" title="Open demo test page" style="font-size:7px;padding:4px 6px;font-family:'Press Start 2P',monospace;">TEST</button>
+        </div>
+        <div class="agent-link-buttons" style="margin-top:4px;">
+          <button id="copy-brain-prompt" class="agent-link-copy brain-prompt-btn" title="Optional: give your crab a personality with a cheap AI model">🦀 COPY BRAIN PROMPT</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Agents panel (auto-populated from relay) -->
+    <div id="agents-panel" class="hidden">
+      <div id="agents-list">
+        <!-- Populated by JS from relay sub-agents -->
+      </div>
+    </div>
+
+    <!-- Admin panel (temporary debug - remove later) -->
+    <div id="admin-panel" class="hidden">
+      <div class="settings-row">
+        <span class="settings-label">ANIMATIONS</span>
+        <div class="chip-row">
+          <button class="state-chip" data-admin="bubbles">BUBBLES</button>
+          <button class="state-chip" data-admin="dance">DANCE</button>
+          <button class="state-chip" data-admin="walkoff">WALK OFF</button>
+        </div>
+      </div>
+      <div class="settings-row">
+        <span class="settings-label">STATE</span>
+        <div id="state-buttons" class="chip-row">
+          <button class="state-chip" data-state="idle">IDLE</button>
+          <button class="state-chip" data-state="thinking">THINK</button>
+          <button class="state-chip" data-state="working">WORK</button>
+          <button class="state-chip" data-state="sleeping">SLEEP</button>
+          <button class="state-chip" data-state="celebrating">PARTY</button>
+          <button class="state-chip" data-state="needs-input">INPUT</button>
+        </div>
+      </div>
+      <div class="settings-row">
+        <span class="settings-label">LEVEL</span>
+        <div class="chip-row">
+          <button class="state-chip" data-admin="xp50">+50 XP</button>
+          <button class="state-chip" data-admin="xp500">+500 XP</button>
+          <button class="state-chip" data-admin="lvlreset">RESET</button>
+        </div>
+      </div>
+      <div class="settings-row">
+        <span class="settings-label">STATS</span>
+        <div class="chip-row">
+          <button class="state-chip" data-admin="feed">FEED</button>
+          <button class="state-chip" data-admin="pet">PET</button>
+          <button class="state-chip" data-admin="starve">STARVE</button>
+          <button class="state-chip" data-admin="sad">SAD</button>
+        </div>
+      </div>
+      <div class="settings-row">
+        <span class="settings-label">SOUND</span>
+        <div class="chip-row">
+          <button class="state-chip" data-admin="playsound">PLAY SFX</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Name input modal (hidden by default) -->
+    <div id="name-modal" class="hidden">
+      <input id="name-input" type="text" maxlength="12" placeholder="ENTER NAME...">
+      <button id="name-save" class="modal-btn">OK</button>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

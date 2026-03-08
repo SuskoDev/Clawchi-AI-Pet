@@ -1,0 +1,22 @@
+{
+  "id": "small-shoes",
+  "name": "Small Shoes",
+  "category": "shoes",
+  "tier": "common",
+  "colorable": true,
+  "pixels": [
+    { "x": 11, "y": 30, "color": "#3366cc" },
+    { "x": 12, "y": 30, "color": "#4488ee" },
+    { "x": 13, "y": 30, "color": "#3366cc" },
+    { "x": 11, "y": 31, "color": "#eeeeee" },
+    { "x": 12, "y": 31, "color": "#ffffff" },
+    { "x": 13, "y": 31, "color": "#eeeeee" },
+
+    { "x": 26, "y": 30, "color": "#3366cc" },
+    { "x": 27, "y": 30, "color": "#4488ee" },
+    { "x": 28, "y": 30, "color": "#3366cc" },
+    { "x": 26, "y": 31, "color": "#eeeeee" },
+    { "x": 27, "y": 31, "color": "#ffffff" },
+    { "x": 28, "y": 31, "color": "#eeeeee" }
+  ]
+}

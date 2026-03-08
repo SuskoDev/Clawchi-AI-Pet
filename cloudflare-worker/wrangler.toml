@@ -1,0 +1,11 @@
+name = "clawchi-relay"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+[vars]
+# Optional: set a secret key to prevent strangers from writing to your relay
+# AUTH_KEY = "my-secret-key"
+
+[[kv_namespaces]]
+binding = "CLAWCHI_KV"
+id = "d4098cbd6a334cc5a96ff55cf06e7b4c"

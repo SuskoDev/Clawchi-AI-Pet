@@ -1,0 +1,16 @@
+{
+  "id": "cigarette",
+  "name": "Cigarette",
+  "category": "collar",
+  "tier": "rare",
+  "pixels": [
+    { "x": 22, "y": 20, "color": "#d4a050" },
+    { "x": 23, "y": 20, "color": "#e8e8e8" },
+    { "x": 24, "y": 20, "color": "#d8d8d8" },
+    { "x": 25, "y": 20, "color": "#e8e8e8" },
+    { "x": 26, "y": 20, "color": "#f08030" },
+    { "x": 27, "y": 20, "color": "#ff4020" },
+    { "x": 27, "y": 19, "color": "#888888" },
+    { "x": 28, "y": 18, "color": "#666666" }
+  ]
+}

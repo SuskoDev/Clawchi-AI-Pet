@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLAWCHI ANIMATIONS</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #1a1a2e;
+  color: #fff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 20px;
+}
+h1 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 24px;
+  letter-spacing: 2px;
+}
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+.card {
+  background: #16213e;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #1a2744;
+}
+.card h3 {
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #ef233c;
+}
+.card canvas {
+  border-radius: 6px;
+  image-rendering: pixelated;
+}
+.card .info {
+  font-size: 0.8rem;
+  color: #8899aa;
+}
+</style>
+</head>
+<body>
+<h1>CLAWCHI ANIMATIONS</h1>
+<div class="grid" id="grid"></div>
+<script>
+const R = '#ef233c', B = '#000000';
+
+// All 282 base pixels
+const BASE = [
+[6,11,B],[33,11,B],
+[5,12,B],[6,12,R],[7,12,B],[9,12,B],[30,12,B],[32,12,B],[33,12,R],[34,12,B],
+[4,13,B],[5,13,R],[6,13,R],[7,13,B],[8,13,B],[9,13,R],[10,13,B],[29,13,B],[30,13,R],[31,13,B],[32,13,B],[33,13,R],[34,13,R],[35,13,B],
+[4,14,B],[5,14,R],[6,14,R],[7,14,R],[8,14,B],[9,14,R],[10,14,R],[11,14,B],[16,14,B],[17,14,B],[18,14,B],[19,14,B],[20,14,B],[21,14,B],[22,14,B],[23,14,B],[28,14,B],[29,14,R],[30,14,R],[31,14,B],[32,14,R],[33,14,R],[34,14,R],[35,14,B],
+[4,15,B],[5,15,R],[6,15,R],[7,15,R],[8,15,R],[9,15,R],[10,15,R],[11,15,B],[14,15,B],[15,15,B],[16,15,R],[17,15,R],[18,15,R],[19,15,R],[20,15,R],[21,15,R],[22,15,R],[23,15,R],[24,15,B],[25,15,B],[28,15,B],[29,15,R],[30,15,R],[31,15,R],[32,15,R],[33,15,R],[34,15,R],[35,15,B],
+[4,16,B],[5,16,R],[6,16,R],[7,16,R],[8,16,R],[9,16,R],[10,16,R],[11,16,B],[13,16,B],[14,16,R],[15,16,R],[16,16,R],[17,16,R],[18,16,R],[19,16,R],[20,16,R],[21,16,R],[22,16,R],[23,16,R],[24,16,R],[25,16,R],[26,16,B],[28,16,B],[29,16,R],[30,16,R],[31,16,R],[32,16,R],[33,16,R],[34,16,R],[35,16,B],
+[5,17,B],[6,17,R],[7,17,R],[8,17,R],[9,17,R],[10,17,B],[12,17,B],[13,17,R],[14,17,R],[15,17,R],[16,17,R],[17,17,R],[18,17,R],[19,17,R],[20,17,R],[21,17,R],[22,17,R],[23,17,R],[24,17,R],[25,17,R],[26,17,R],[27,17,B],[29,17,B],[30,17,R],[31,17,R],[32,17,R],[33,17,R],[34,17,B],
+[6,18,B],[7,18,B],[8,18,B],[9,18,B],[11,18,B],[12,18,R],[13,18,R],[14,18,R],[15,18,B],[16,18,B],[17,18,R],[18,18,R],[19,18,R],[20,18,R],[21,18,R],[22,18,R],[23,18,B],[24,18,B],[25,18,R],[26,18,R],[27,18,R],[28,18,B],[30,18,B],[31,18,B],[32,18,B],[33,18,B],
+[7,19,B],[8,19,R],[9,19,R],[10,19,B],[11,19,B],[12,19,R],[13,19,R],[14,19,R],[15,19,B],[16,19,B],[17,19,R],[18,19,R],[19,19,R],[20,19,R],[21,19,R],[22,19,R],[23,19,B],[24,19,B],[25,19,R],[26,19,R],[27,19,R],[28,19,B],[29,19,B],[30,19,R],[31,19,R],[32,19,B],
+[8,20,B],[9,20,R],[10,20,B],[11,20,R],[12,20,R],[13,20,R],[14,20,R],[15,20,R],[16,20,R],[17,20,R],[18,20,B],[19,20,B],[20,20,B],[21,20,B],[22,20,R],[23,20,R],[24,20,R],[25,20,R],[26,20,R],[27,20,R],[28,20,R],[29,20,B],[30,20,R],[31,20,B],
+[9,21,B],[10,21,B],[11,21,R],[12,21,R],[13,21,R],[14,21,R],[15,21,R],[16,21,R],[17,21,R],[18,21,R],[19,21,R],[20,21,R],[21,21,R],[22,21,R],[23,21,R],[24,21,R],[25,21,R],[26,21,R],[27,21,R],[28,21,R],[29,21,B],[30,21,B],
+[10,22,B],[11,22,R],[12,22,R],[13,22,R],[14,22,R],[15,22,R],[16,22,R],[17,22,R],[18,22,R],[19,22,R],[20,22,R],[21,22,R],[22,22,R],[23,22,R],[24,22,R],[25,22,R],[26,22,R],[27,22,R],[28,22,R],[29,22,B],
+[10,23,B],[11,23,R],[12,23,R],[13,23,R],[14,23,R],[15,23,R],[16,23,R],[17,23,R],[18,23,R],[19,23,R],[20,23,R],[21,23,R],[22,23,R],[23,23,R],[24,23,R],[25,23,R],[26,23,R],[27,23,R],[28,23,R],[29,23,B],
+[10,24,B],[11,24,R],[12,24,R],[13,24,R],[14,24,R],[15,24,R],[16,24,R],[17,24,R],[18,24,R],[19,24,R],[20,24,R],[21,24,R],[22,24,R],[23,24,R],[24,24,R],[25,24,R],[26,24,R],[27,24,R],[28,24,R],[29,24,B],
+[9,25,B],[10,25,R],[11,25,B],[12,25,R],[13,25,R],[14,25,R],[15,25,R],[16,25,R],[17,25,R],[18,25,R],[19,25,R],[20,25,R],[21,25,R],[22,25,R],[23,25,R],[24,25,R],[25,25,R],[26,25,R],[27,25,R],[28,25,B],[29,25,R],[30,25,B],
+[8,26,B],[9,26,R],[10,26,R],[11,26,B],[12,26,B],[13,26,R],[14,26,R],[15,26,R],[16,26,R],[17,26,R],[18,26,R],[19,26,R],[20,26,R],[21,26,R],[22,26,R],[23,26,R],[24,26,R],[25,26,R],[26,26,R],[27,26,B],[28,26,B],[29,26,R],[30,26,R],[31,26,B],
+[8,27,B],[9,27,R],[10,27,B],[12,27,B],[13,27,B],[14,27,R],[15,27,R],[16,27,R],[17,27,R],[18,27,R],[19,27,R],[20,27,R],[21,27,R],[22,27,R],[23,27,R],[24,27,R],[25,27,R],[26,27,B],[27,27,B],[29,27,B],[30,27,R],[31,27,B],
+[9,28,B],[11,28,B],[12,28,R],[13,28,R],[14,28,B],[15,28,B],[16,28,R],[17,28,R],[18,28,R],[19,28,R],[20,28,R],[21,28,R],[22,28,R],[23,28,R],[24,28,B],[25,28,B],[26,28,R],[27,28,R],[28,28,B],[30,28,B],
+[11,29,B],[12,29,R],[13,29,B],[16,29,B],[17,29,B],[18,29,B],[19,29,B],[20,29,B],[21,29,B],[22,29,B],[23,29,B],[24,29,B],[26,29,B],[27,29,R],[28,29,B],
+[12,30,B],[27,30,B]
+];
+
+// ============================================================
+// POSITION-BASED CLASSIFICATION (Problem 1 fix)
+// All pixels (fill AND outline) in a region move together
+// ============================================================
+
+// Leg pixel lookup — exact coordinates including outline pixels
+const LL = {};
+[[9,25],[10,25],[11,25],[8,26],[9,26],[10,26],[11,26],[8,27],[9,27],[10,27],[9,28]].forEach(p => LL[p[0]+','+p[1]] = 'legUL');
+[[11,28],[12,28],[13,28],[14,28],[11,29],[12,29],[13,29],[12,30]].forEach(p => LL[p[0]+','+p[1]] = 'legLL');
+[[28,25],[29,25],[30,25],[28,26],[29,26],[30,26],[31,26],[29,27],[30,27],[31,27],[30,28]].forEach(p => LL[p[0]+','+p[1]] = 'legUR');
+[[25,28],[26,28],[27,28],[28,28],[26,29],[27,29],[28,29],[27,30]].forEach(p => LL[p[0]+','+p[1]] = 'legLR');
+
+function cls(x, y) {
+  // Face features (exact positions)
+  if ((y === 18 || y === 19) && (x === 15 || x === 16)) return 'leftEye';
+  if ((y === 18 || y === 19) && (x === 23 || x === 24)) return 'rightEye';
+  if (y === 20 && x >= 18 && x <= 21) return 'mouth';
+  // Left claw: x<=10 for y<=20, plus outline at x=11 for y=14-19
+  if ((x <= 10 && y <= 20) || (x === 11 && y >= 14 && y <= 19)) return 'leftClaw';
+  // Right claw: x>=29 for y<=20, plus outline at x=28 for y=14-19
+  if ((x >= 29 && y <= 20) || (x === 28 && y >= 14 && y <= 19)) return 'rightClaw';
+  // Legs via lookup
+  const lk = LL[x + ',' + y];
+  if (lk) return lk;
+  // Everything else is body
+  return 'body';
+}
+
+// ============================================================
+// FACE BACKING (Problem 2 fix)
+// Body-color fills at all face feature positions are placed first.
+// Actual face pixels overwrite them. If removed, red shows through.
+// ============================================================
+
+const FACE_POS = [
+  [15,18],[16,18],[15,19],[16,19],   // left eye
+  [23,18],[24,18],[23,19],[24,19],   // right eye
+  [18,20],[19,20],[20,20],[21,20]    // mouth
+];
+
+// Claw-body boundary backing — red fills so outline doesn't orphan
+const CLAW_BACKING = [
+  [11,18],[11,19],  // left claw-body boundary
+  [28,18],[28,19]   // right claw-body boundary
+];
+
+function genFrame(frame) {
+  const dx0 = frame.all?.dx || 0;
+  const dy0 = frame.all?.dy || 0;
+  const removeSet = new Set((frame.remove || []).map(([x, y]) => `${x},${y}`));
+  const map = new Map();
+
+  // Step 1: Place body-color fills at face + claw boundary positions (lowest priority)
+  for (const [fx, fy] of FACE_POS) {
+    const nx = fx + dx0, ny = fy + dy0;
+    map.set(`${nx},${ny}`, { x: nx, y: ny, c: R });
+  }
+  for (const [cx, cy] of CLAW_BACKING) {
+    const nx = cx + dx0, ny = cy + dy0;
+    map.set(`${nx},${ny}`, { x: nx, y: ny, c: R });
+  }
+
+  // Step 2: Process all base pixels (overwrites face backing where present)
+  for (const [x, y, c] of BASE) {
+    if (removeSet.has(`${x},${y}`)) continue;
+    const part = cls(x, y);
+    const t = frame.parts?.[part];
+    const nx = x + dx0 + (t?.dx || 0);
+    const ny = y + dy0 + (t?.dy || 0);
+    map.set(`${nx},${ny}`, { x: nx, y: ny, c });
+  }
+
+  // Step 3: Extra pixels (shifted by global transform so they stay on the crab)
+  if (frame.add) {
+    for (const [x, y, c] of frame.add) {
+      const nx = x + dx0, ny = y + dy0;
+      map.set(`${nx},${ny}`, { x: nx, y: ny, c });
+    }
+  }
+
+  return [...map.values()];
+}
+
+// ============================================================
+// RENDERING
+// ============================================================
+
+const S = 8, OX = -16, OY = -48, CW = 320, CH = 240;
+const BG = '#0f1525';
+
+function drawFrame(ctx, pixels) {
+  ctx.fillStyle = BG;
+  ctx.fillRect(0, 0, CW, CH);
+  // Subtle grid
+  ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+  ctx.lineWidth = 1;
+  for (let gx = 0; gx < CW; gx += S) {
+    ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, CH); ctx.stroke();
+  }
+  for (let gy = 0; gy < CH; gy += S) {
+    ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(CW, gy); ctx.stroke();
+  }
+  for (const p of pixels) {
+    ctx.fillStyle = p.c;
+    ctx.fillRect(p.x * S + OX, p.y * S + OY, S, S);
+  }
+}
+
+// ============================================================
+// ANIMATIONS (13 total)
+// ============================================================
+
+const ANIMS = [
+  // 1. Idle — breathing: body bobs up/down 1px, legs stay planted
+  {
+    name: 'Idle',
+    fps: 1,
+    frames: [
+      {},
+      { all: { dy: 1 }, parts: { legUL: { dy: -1 }, legLL: { dy: -1 }, legUR: { dy: -1 }, legLR: { dy: -1 } } },
+      { all: { dy: -1 }, parts: { legUL: { dy: 1 }, legLL: { dy: 1 }, legUR: { dy: 1 }, legLR: { dy: 1 } } }
+    ]
+  },
+
+  // 2. Idle Claws Down — claws hang low + breathing
+  {
+    name: 'Idle Claws Down',
+    fps: 0.8,
+    frames: [
+      { parts: { leftClaw: { dy: 2 }, rightClaw: { dy: 2 } } },
+      { all: { dy: 1 }, parts: { leftClaw: { dy: 1 }, rightClaw: { dy: 1 }, legUL: { dy: -1 }, legLL: { dy: -1 }, legUR: { dy: -1 }, legLR: { dy: -1 } } },
+      { all: { dy: -1 }, parts: { leftClaw: { dy: 3 }, rightClaw: { dy: 3 }, legUL: { dy: 1 }, legLL: { dy: 1 }, legUR: { dy: 1 }, legLR: { dy: 1 } } }
+    ]
+  },
+
+  // 3. Walk Left — legs step left one at a time (8 frames @ 3fps)
+  {
+    name: 'Walk Left',
+    fps: 3,
+    frames: [
+      {},
+      { parts: { legUL: { dx: -1, dy: -1 } } },
+      {},
+      { parts: { legLL: { dx: -1, dy: -1 } } },
+      {},
+      { parts: { legUR: { dx: -1, dy: -1 } } },
+      {},
+      { parts: { legLR: { dx: -1, dy: -1 } } }
+    ]
+  },
+
+  // 4. Walk Right — legs step right one at a time (8 frames @ 3fps)
+  {
+    name: 'Walk Right',
+    fps: 3,
+    frames: [
+      {},
+      { parts: { legUR: { dx: 1, dy: -1 } } },
+      {},
+      { parts: { legLR: { dx: 1, dy: -1 } } },
+      {},
+      { parts: { legUL: { dx: 1, dy: -1 } } },
+      {},
+      { parts: { legLL: { dx: 1, dy: -1 } } }
+    ]
+  },
+
+  // 5. Jump (6 frames @ 4fps)
+  {
+    name: 'Jump',
+    fps: 4,
+    frames: [
+      { all: { dy: 1 } },
+      { all: { dy: -1 } },
+      { all: { dy: -3 } },
+      { all: { dy: -4 } },
+      { all: { dy: -2 } },
+      {}
+    ]
+  },
+
+  // 6. Flip — jump + tuck to suggest spin (8 frames @ 5fps)
+  {
+    name: 'Flip',
+    fps: 5,
+    frames: [
+      { all: { dy: 1 } },
+      { all: { dy: -2 } },
+      { all: { dy: -4 } },
+      { all: { dy: -6 }, parts: {
+        legUL: { dy: -3 }, legLL: { dy: -4 },
+        legUR: { dy: -3 }, legLR: { dy: -4 },
+        leftClaw: { dx: 2 }, rightClaw: { dx: -2 }
+      }},
+      { all: { dy: -5 }, parts: {
+        legUL: { dy: -2 }, legLL: { dy: -2 },
+        legUR: { dy: -2 }, legLR: { dy: -2 }
+      }},
+      { all: { dy: -3 } },
+      { all: { dy: 1 } },
+      {}
+    ]
+  },
+
+  // 7. Happy — claws raise with bounce (4 frames @ 3fps)
+  {
+    name: 'Happy',
+    fps: 3,
+    frames: [
+      {},
+      { parts: { leftClaw: { dy: -1 }, rightClaw: { dy: -1 } } },
+      { parts: { leftClaw: { dy: -2 }, rightClaw: { dy: -2 } } },
+      { all: { dy: -1 }, parts: { leftClaw: { dy: -2 }, rightClaw: { dy: -2 } } }
+    ]
+  },
+
+  // 8. Sad — claws droop (4 frames @ 1fps)
+  {
+    name: 'Sad',
+    fps: 1,
+    frames: [
+      {},
+      { parts: { leftClaw: { dy: 1 }, rightClaw: { dy: 1 } } },
+      { parts: { leftClaw: { dy: 2 }, rightClaw: { dy: 2 } } },
+      { parts: { leftClaw: { dy: 1 }, rightClaw: { dy: 1 } } }
+    ]
+  },
+
+  // 9. Sleep — eyes half-closed + breathing (2 frames @ 0.7fps)
+  {
+    name: 'Sleep',
+    fps: 0.7,
+    frames: [
+      { remove: [[15,18],[16,18],[23,18],[24,18]] },
+      { remove: [[15,18],[16,18],[23,18],[24,18]], all: { dy: 1 } }
+    ]
+  },
+
+  // 10. Wave — right claw raises and lowers (6 frames @ 3fps)
+  {
+    name: 'Wave',
+    fps: 3,
+    frames: [
+      {},
+      { parts: { rightClaw: { dy: -1 } } },
+      { parts: { rightClaw: { dy: -2 } } },
+      { parts: { rightClaw: { dy: -3 } } },
+      { parts: { rightClaw: { dy: -2 } } },
+      { parts: { rightClaw: { dy: -1 } } }
+    ]
+  },
+
+  // 11. Dance — side-to-side sway with claw raises (8 frames @ 4fps)
+  {
+    name: 'Dance',
+    fps: 4,
+    frames: [
+      { parts: { leftClaw: { dy: -2 } }, all: { dx: -1 } },
+      {},
+      { parts: { rightClaw: { dy: -2 } }, all: { dx: 1 } },
+      {},
+      { parts: { leftClaw: { dy: -2 }, rightClaw: { dy: -2 } }, all: { dy: -1 } },
+      {},
+      { parts: { leftClaw: { dy: -2 }, rightClaw: { dy: -2 } }, all: { dy: -1 } },
+      {}
+    ]
+  },
+
+  // 12. Thinking — left claw reaches up to scratch head (8 frames @ 2fps)
+  {
+    name: 'Thinking',
+    fps: 2,
+    frames: [
+      {},
+      { parts: { leftClaw: { dy: -2 } } },
+      { parts: { leftClaw: { dx: 1, dy: -4 } } },
+      { parts: { leftClaw: { dx: 2, dy: -4 } } },
+      { parts: { leftClaw: { dx: 1, dy: -4 } } },
+      { parts: { leftClaw: { dx: 2, dy: -4 } } },
+      { parts: { leftClaw: { dy: -2 } } },
+      {}
+    ]
+  },
+
+  // 13. Error / Panic — rapid shake (2 frames @ 8fps)
+  {
+    name: 'Error / Panic',
+    fps: 8,
+    frames: [
+      { all: { dx: 1 } },
+      { all: { dx: -1 } }
+    ]
+  }
+];
+
+// ============================================================
+// PAGE SETUP — create cards, pre-generate frames, start loops
+// ============================================================
+
+const grid = document.getElementById('grid');
+
+for (const anim of ANIMS) {
+  const card = document.createElement('div');
+  card.className = 'card';
+
+  const h3 = document.createElement('h3');
+  h3.textContent = anim.name;
+  card.appendChild(h3);
+
+  const canvas = document.createElement('canvas');
+  canvas.width = CW;
+  canvas.height = CH;
+  card.appendChild(canvas);
+
+  const info = document.createElement('div');
+  info.className = 'info';
+  info.textContent = `${anim.frames.length} frames @ ${anim.fps} FPS`;
+  card.appendChild(info);
+
+  grid.appendChild(card);
+
+  // Pre-generate all frame pixel arrays at initialization
+  const rendered = anim.frames.map(f => genFrame(f));
+  const ctx = canvas.getContext('2d');
+  let fi = 0;
+  drawFrame(ctx, rendered[0]);
+
+  setInterval(() => {
+    fi = (fi + 1) % rendered.length;
+    drawFrame(ctx, rendered[fi]);
+  }, 1000 / anim.fps);
+}
+
+// ============================================================
+// FACE ANIMATIONS — independent layer, mix with any body anim
+// ============================================================
+
+const faceH = document.createElement('h2');
+faceH.textContent = 'FACE ANIMATIONS';
+faceH.style.cssText = 'text-align:center;font-size:1.5rem;margin:40px 0 4px;letter-spacing:2px;color:#fff;';
+document.body.appendChild(faceH);
+const faceP = document.createElement('p');
+faceP.textContent = 'Independent from body — can layer on top of any body animation';
+faceP.style.cssText = 'text-align:center;color:#556;margin-bottom:20px;font-size:0.85rem;';
+document.body.appendChild(faceP);
+const faceGrid = document.createElement('div');
+faceGrid.className = 'grid';
+document.body.appendChild(faceGrid);
+
+// All default face pixels to remove when replacing the expression
+const ALL_FACE = [
+  [15,18],[16,18],[15,19],[16,19],
+  [23,18],[24,18],[23,19],[24,19],
+  [18,20],[19,20],[20,20],[21,20]
+];
+const PNK = '#ff69b4';
+const BLU = '#4da6ff';
+
+const FACE_ANIMS = [
+  // 1. Normal — default face, no changes
+  { name: 'Normal', fps: 1, frames: [{}] },
+
+  // 2. Happy — normal eyes + smile mouth curving UP (U shape)
+  { name: 'Happy', fps: 2, frames: [
+    { remove: ALL_FACE, add: [
+      [15,18,B],[16,18,B],[15,19,B],[16,19,B],[23,18,B],[24,18,B],[23,19,B],[24,19,B],
+      [18,20,B],[21,20,B],[19,21,B],[20,21,B]
+    ]},
+    { remove: ALL_FACE, add: [
+      [15,18,B],[16,18,B],[15,19,B],[16,19,B],[23,18,B],[24,18,B],[23,19,B],[24,19,B],
+      [17,20,B],[22,20,B],[18,21,B],[19,21,B],[20,21,B],[21,21,B]
+    ]}
+  ]},
+
+  // 3. Sad Tear — normal eyes, frown mouth (curves down), tear drips
+  { name: 'Sad Tear', fps: 1.5, frames: [
+    { remove: ALL_FACE, add: [
+      [15,18,B],[16,18,B],[15,19,B],[16,19,B],[23,18,B],[24,18,B],[23,19,B],[24,19,B],
+      [19,20,B],[20,20,B],[18,21,B],[21,21,B],
+      [24,20,BLU]
+    ]},
+    { remove: ALL_FACE, add: [
+      [15,18,B],[16,18,B],[15,19,B],[16,19,B],[23,18,B],[24,18,B],[23,19,B],[24,19,B],
+      [19,20,B],[20,20,B],[18,21,B],[21,21,B],
+      [24,21,BLU]
+    ]},
+    { remove: ALL_FACE, add: [
+      [15,18,B],[16,18,B],[15,19,B],[16,19,B],[23,18,B],[24,18,B],[23,19,B],[24,19,B],
+      [19,20,B],[20,20,B],[18,21,B],[21,21,B],
+      [24,22,BLU]
+    ]},
+    { remove: ALL_FACE, add: [
+      [15,18,B],[16,18,B],[15,19,B],[16,19,B],[23,18,B],[24,18,B],[23,19,B],[24,19,B],
+      [19,20,B],[20,20,B],[18,21,B],[21,21,B]
+    ]}
+  ]},
+
+  // 4. Wink — left eye closes to a line then reopens
+  { name: 'Wink ;)', fps: 2, frames: [
+    {},
+    { remove: [[15,18],[16,18]] },
+    { remove: [[15,18],[16,18]] },
+    {}
+  ]},
+
+  // 5. Surprised — normal eyes + open rectangle mouth (gasping)
+  { name: 'Surprised !', fps: 2, frames: [
+    { remove: ALL_FACE, add: [
+      [15,18,B],[16,18,B],[15,19,B],[16,19,B],[23,18,B],[24,18,B],[23,19,B],[24,19,B],
+      [18,20,B],[19,20,B],[20,20,B],[21,20,B],
+      [18,21,B],[21,21,B],
+      [18,22,B],[19,22,B],[20,22,B],[21,22,B]
+    ]},
+    { remove: ALL_FACE, add: [
+      [15,18,B],[16,18,B],[15,19,B],[16,19,B],[23,18,B],[24,18,B],[23,19,B],[24,19,B],
+      [19,20,B],[20,20,B],
+      [19,21,B],[20,21,B]
+    ]}
+  ]},
+
+  // 6. Angry — squinty glaring eyes + wide tight mouth (gritting)
+  { name: 'Angry', fps: 1.5, frames: [
+    { remove: ALL_FACE, add: [
+      [15,19,B],[16,19,B],[23,19,B],[24,19,B],
+      [17,20,B],[18,20,B],[19,20,B],[20,20,B],[21,20,B],[22,20,B]
+    ]},
+    { remove: ALL_FACE, add: [
+      [15,19,B],[16,19,B],[23,19,B],[24,19,B],
+      [18,20,B],[19,20,B],[20,20,B],[21,20,B]
+    ]}
+  ]},
+
+  // 7. Love — pixel heart eyes (3x3 hearts), pulsing beat
+  { name: 'Love', fps: 2, frames: [
+    { remove: ALL_FACE, add: [
+      [14,18,PNK],[16,18,PNK],
+      [14,19,PNK],[15,19,PNK],[16,19,PNK],
+      [15,20,PNK],
+      [23,18,PNK],[25,18,PNK],
+      [23,19,PNK],[24,19,PNK],[25,19,PNK],
+      [24,20,PNK],
+      [18,20,B],[19,20,B],[20,20,B],[21,20,B]
+    ]},
+    { remove: ALL_FACE, add: [
+      [14,17,PNK],[16,17,PNK],
+      [14,18,PNK],[15,18,PNK],[16,18,PNK],
+      [15,19,PNK],
+      [23,17,PNK],[25,17,PNK],
+      [23,18,PNK],[24,18,PNK],[25,18,PNK],
+      [24,19,PNK],
+      [18,20,B],[19,20,B],[20,20,B],[21,20,B]
+    ]}
+  ]},
+
+  // 8. Dizzy — spinning dot eyes, normal mouth
+  { name: 'Dizzy', fps: 3, frames: [
+    { remove: ALL_FACE, add: [
+      [15,18,B],[24,18,B],
+      [18,20,B],[19,20,B],[20,20,B],[21,20,B]
+    ]},
+    { remove: ALL_FACE, add: [
+      [16,18,B],[23,18,B],
+      [18,20,B],[19,20,B],[20,20,B],[21,20,B]
+    ]},
+    { remove: ALL_FACE, add: [
+      [16,19,B],[23,19,B],
+      [18,20,B],[19,20,B],[20,20,B],[21,20,B]
+    ]},
+    { remove: ALL_FACE, add: [
+      [15,19,B],[24,19,B],
+      [18,20,B],[19,20,B],[20,20,B],[21,20,B]
+    ]}
+  ]},
+
+  // 9. Blush — pink cheek dots pulse, normal face stays
+  { name: 'Blush', fps: 1.5, frames: [
+    { add: [[14,19,PNK],[25,19,PNK]] },
+    { add: [[13,19,PNK],[14,19,PNK],[25,19,PNK],[26,19,PNK]] }
+  ]},
+
+  // 10. Dead X_X — diagonal slash eyes alternate, tongue out
+  { name: 'Dead X_X', fps: 0.5, frames: [
+    { remove: ALL_FACE, add: [
+      [15,18,B],[16,19,B],[24,18,B],[23,19,B],
+      [19,20,B],[20,20,B],[20,21,PNK]
+    ]},
+    { remove: ALL_FACE, add: [
+      [16,18,B],[15,19,B],[23,18,B],[24,19,B],
+      [19,20,B],[20,20,B],[20,21,PNK]
+    ]}
+  ]}
+];
+
+for (const anim of FACE_ANIMS) {
+  const card = document.createElement('div');
+  card.className = 'card';
+  const h3 = document.createElement('h3');
+  h3.textContent = anim.name;
+  card.appendChild(h3);
+  const canvas = document.createElement('canvas');
+  canvas.width = CW; canvas.height = CH;
+  card.appendChild(canvas);
+  const info = document.createElement('div');
+  info.className = 'info';
+  info.textContent = `${anim.frames.length} frames @ ${anim.fps} FPS`;
+  card.appendChild(info);
+  faceGrid.appendChild(card);
+  const rendered = anim.frames.map(f => genFrame(f));
+  const ctx = canvas.getContext('2d');
+  let fi = 0;
+  drawFrame(ctx, rendered[0]);
+  if (rendered.length > 1) {
+    setInterval(() => { fi = (fi+1) % rendered.length; drawFrame(ctx, rendered[fi]); }, 1000 / anim.fps);
+  }
+}
+</script>
+</body>
+</html>

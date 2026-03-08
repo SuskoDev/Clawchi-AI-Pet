@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Clawchi Anatomy Map</title>
+<style>
+  body { background: #1a1a2e; margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; font-family: 'Segoe UI', sans-serif; color: #fff; }
+  h1 { font-size: 24px; margin-bottom: 10px; }
+  .container { display: flex; gap: 40px; align-items: flex-start; flex-wrap: wrap; justify-content: center; padding: 20px; }
+  .crab-view { position: relative; }
+  .crab-view h3 { text-align: center; margin-bottom: 8px; opacity: 0.7; font-size: 14px; }
+  canvas { image-rendering: pixelated; border: 2px solid #333; border-radius: 8px; }
+  .legend { background: #16213e; padding: 20px; border-radius: 12px; min-width: 200px; }
+  .legend h3 { margin: 0 0 15px 0; font-size: 16px; border-bottom: 1px solid #333; padding-bottom: 8px; }
+  .legend-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .legend-swatch { width: 20px; height: 20px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); flex-shrink: 0; }
+  .legend-label { font-size: 14px; }
+  .legend-coords { font-size: 10px; opacity: 0.5; display: block; }
+</style>
+</head>
+<body>
+
+<h1>CLAWCHI ANATOMY MAP</h1>
+<div class="container">
+  <div class="crab-view">
+    <h3>COLOR-CODED BODY PARTS</h3>
+    <canvas id="anatomy" width="640" height="400"></canvas>
+  </div>
+  <div class="crab-view">
+    <h3>ORIGINAL COLORS</h3>
+    <canvas id="original" width="640" height="400"></canvas>
+  </div>
+  <div class="legend" id="legend">
+    <h3>10 BODY PARTS</h3>
+  </div>
+</div>
+
+<script>
+const PIXELS = [[6,11,"#000000"],[33,11,"#000000"],[5,12,"#000000"],[6,12,"#ef233c"],[7,12,"#000000"],[9,12,"#000000"],[30,12,"#000000"],[32,12,"#000000"],[33,12,"#ef233c"],[34,12,"#000000"],[4,13,"#000000"],[5,13,"#ef233c"],[6,13,"#ef233c"],[7,13,"#000000"],[8,13,"#000000"],[9,13,"#ef233c"],[10,13,"#000000"],[29,13,"#000000"],[30,13,"#ef233c"],[31,13,"#000000"],[32,13,"#000000"],[33,13,"#ef233c"],[34,13,"#ef233c"],[35,13,"#000000"],[4,14,"#000000"],[5,14,"#ef233c"],[6,14,"#ef233c"],[7,14,"#ef233c"],[8,14,"#000000"],[9,14,"#ef233c"],[10,14,"#ef233c"],[11,14,"#000000"],[16,14,"#000000"],[17,14,"#000000"],[18,14,"#000000"],[19,14,"#000000"],[20,14,"#000000"],[21,14,"#000000"],[22,14,"#000000"],[23,14,"#000000"],[28,14,"#000000"],[29,14,"#ef233c"],[30,14,"#ef233c"],[31,14,"#000000"],[32,14,"#ef233c"],[33,14,"#ef233c"],[34,14,"#ef233c"],[35,14,"#000000"],[4,15,"#000000"],[5,15,"#ef233c"],[6,15,"#ef233c"],[7,15,"#ef233c"],[8,15,"#ef233c"],[9,15,"#ef233c"],[10,15,"#ef233c"],[11,15,"#000000"],[14,15,"#000000"],[15,15,"#000000"],[16,15,"#ef233c"],[17,15,"#ef233c"],[18,15,"#ef233c"],[19,15,"#ef233c"],[20,15,"#ef233c"],[21,15,"#ef233c"],[22,15,"#ef233c"],[23,15,"#ef233c"],[24,15,"#000000"],[25,15,"#000000"],[28,15,"#000000"],[29,15,"#ef233c"],[30,15,"#ef233c"],[31,15,"#ef233c"],[32,15,"#ef233c"],[33,15,"#ef233c"],[34,15,"#ef233c"],[35,15,"#000000"],[4,16,"#000000"],[5,16,"#ef233c"],[6,16,"#ef233c"],[7,16,"#ef233c"],[8,16,"#ef233c"],[9,16,"#ef233c"],[10,16,"#ef233c"],[11,16,"#000000"],[13,16,"#000000"],[14,16,"#ef233c"],[15,16,"#ef233c"],[16,16,"#ef233c"],[17,16,"#ef233c"],[18,16,"#ef233c"],[19,16,"#ef233c"],[20,16,"#ef233c"],[21,16,"#ef233c"],[22,16,"#ef233c"],[23,16,"#ef233c"],[24,16,"#ef233c"],[25,16,"#ef233c"],[26,16,"#000000"],[28,16,"#000000"],[29,16,"#ef233c"],[30,16,"#ef233c"],[31,16,"#ef233c"],[32,16,"#ef233c"],[33,16,"#ef233c"],[34,16,"#ef233c"],[35,16,"#000000"],[5,17,"#000000"],[6,17,"#ef233c"],[7,17,"#ef233c"],[8,17,"#ef233c"],[9,17,"#ef233c"],[10,17,"#000000"],[12,17,"#000000"],[13,17,"#ef233c"],[14,17,"#ef233c"],[15,17,"#ef233c"],[16,17,"#ef233c"],[17,17,"#ef233c"],[18,17,"#ef233c"],[19,17,"#ef233c"],[20,17,"#ef233c"],[21,17,"#ef233c"],[22,17,"#ef233c"],[23,17,"#ef233c"],[24,17,"#ef233c"],[25,17,"#ef233c"],[26,17,"#ef233c"],[27,17,"#000000"],[29,17,"#000000"],[30,17,"#ef233c"],[31,17,"#ef233c"],[32,17,"#ef233c"],[33,17,"#ef233c"],[34,17,"#000000"],[6,18,"#000000"],[7,18,"#000000"],[8,18,"#000000"],[9,18,"#000000"],[11,18,"#000000"],[12,18,"#ef233c"],[13,18,"#ef233c"],[14,18,"#ef233c"],[15,18,"#000000"],[16,18,"#000000"],[17,18,"#ef233c"],[18,18,"#ef233c"],[19,18,"#ef233c"],[20,18,"#ef233c"],[21,18,"#ef233c"],[22,18,"#ef233c"],[23,18,"#000000"],[24,18,"#000000"],[25,18,"#ef233c"],[26,18,"#ef233c"],[27,18,"#ef233c"],[28,18,"#000000"],[30,18,"#000000"],[31,18,"#000000"],[32,18,"#000000"],[33,18,"#000000"],[7,19,"#000000"],[8,19,"#ef233c"],[9,19,"#ef233c"],[10,19,"#000000"],[11,19,"#000000"],[12,19,"#ef233c"],[13,19,"#ef233c"],[14,19,"#ef233c"],[15,19,"#000000"],[16,19,"#000000"],[17,19,"#ef233c"],[18,19,"#ef233c"],[19,19,"#ef233c"],[20,19,"#ef233c"],[21,19,"#ef233c"],[22,19,"#ef233c"],[23,19,"#000000"],[24,19,"#000000"],[25,19,"#ef233c"],[26,19,"#ef233c"],[27,19,"#ef233c"],[28,19,"#000000"],[29,19,"#000000"],[30,19,"#ef233c"],[31,19,"#ef233c"],[32,19,"#000000"],[8,20,"#000000"],[9,20,"#ef233c"],[10,20,"#000000"],[11,20,"#ef233c"],[12,20,"#ef233c"],[13,20,"#ef233c"],[14,20,"#ef233c"],[15,20,"#ef233c"],[16,20,"#ef233c"],[17,20,"#ef233c"],[18,20,"#000000"],[19,20,"#000000"],[20,20,"#000000"],[21,20,"#000000"],[22,20,"#ef233c"],[23,20,"#ef233c"],[24,20,"#ef233c"],[25,20,"#ef233c"],[26,20,"#ef233c"],[27,20,"#ef233c"],[28,20,"#ef233c"],[29,20,"#000000"],[30,20,"#ef233c"],[31,20,"#000000"],[9,21,"#000000"],[10,21,"#000000"],[11,21,"#ef233c"],[12,21,"#ef233c"],[13,21,"#ef233c"],[14,21,"#ef233c"],[15,21,"#ef233c"],[16,21,"#ef233c"],[17,21,"#ef233c"],[18,21,"#ef233c"],[19,21,"#ef233c"],[20,21,"#ef233c"],[21,21,"#ef233c"],[22,21,"#ef233c"],[23,21,"#ef233c"],[24,21,"#ef233c"],[25,21,"#ef233c"],[26,21,"#ef233c"],[27,21,"#ef233c"],[28,21,"#ef233c"],[29,21,"#000000"],[30,21,"#000000"],[10,22,"#000000"],[11,22,"#ef233c"],[12,22,"#ef233c"],[13,22,"#ef233c"],[14,22,"#ef233c"],[15,22,"#ef233c"],[16,22,"#ef233c"],[17,22,"#ef233c"],[18,22,"#ef233c"],[19,22,"#ef233c"],[20,22,"#ef233c"],[21,22,"#ef233c"],[22,22,"#ef233c"],[23,22,"#ef233c"],[24,22,"#ef233c"],[25,22,"#ef233c"],[26,22,"#ef233c"],[27,22,"#ef233c"],[28,22,"#ef233c"],[29,22,"#000000"],[10,23,"#000000"],[11,23,"#ef233c"],[12,23,"#ef233c"],[13,23,"#ef233c"],[14,23,"#ef233c"],[15,23,"#ef233c"],[16,23,"#ef233c"],[17,23,"#ef233c"],[18,23,"#ef233c"],[19,23,"#ef233c"],[20,23,"#ef233c"],[21,23,"#ef233c"],[22,23,"#ef233c"],[23,23,"#ef233c"],[24,23,"#ef233c"],[25,23,"#ef233c"],[26,23,"#ef233c"],[27,23,"#ef233c"],[28,23,"#ef233c"],[29,23,"#000000"],[10,24,"#000000"],[11,24,"#ef233c"],[12,24,"#ef233c"],[13,24,"#ef233c"],[14,24,"#ef233c"],[15,24,"#ef233c"],[16,24,"#ef233c"],[17,24,"#ef233c"],[18,24,"#ef233c"],[19,24,"#ef233c"],[20,24,"#ef233c"],[21,24,"#ef233c"],[22,24,"#ef233c"],[23,24,"#ef233c"],[24,24,"#ef233c"],[25,24,"#ef233c"],[26,24,"#ef233c"],[27,24,"#ef233c"],[28,24,"#ef233c"],[29,24,"#000000"],[9,25,"#000000"],[10,25,"#ef233c"],[11,25,"#000000"],[12,25,"#ef233c"],[13,25,"#ef233c"],[14,25,"#ef233c"],[15,25,"#ef233c"],[16,25,"#ef233c"],[17,25,"#ef233c"],[18,25,"#ef233c"],[19,25,"#ef233c"],[20,25,"#ef233c"],[21,25,"#ef233c"],[22,25,"#ef233c"],[23,25,"#ef233c"],[24,25,"#ef233c"],[25,25,"#ef233c"],[26,25,"#ef233c"],[27,25,"#ef233c"],[28,25,"#000000"],[29,25,"#ef233c"],[30,25,"#000000"],[8,26,"#000000"],[9,26,"#ef233c"],[10,26,"#ef233c"],[11,26,"#000000"],[12,26,"#000000"],[13,26,"#ef233c"],[14,26,"#ef233c"],[15,26,"#ef233c"],[16,26,"#ef233c"],[17,26,"#ef233c"],[18,26,"#ef233c"],[19,26,"#ef233c"],[20,26,"#ef233c"],[21,26,"#ef233c"],[22,26,"#ef233c"],[23,26,"#ef233c"],[24,26,"#ef233c"],[25,26,"#ef233c"],[26,26,"#ef233c"],[27,26,"#000000"],[28,26,"#000000"],[29,26,"#ef233c"],[30,26,"#ef233c"],[31,26,"#000000"],[8,27,"#000000"],[9,27,"#ef233c"],[10,27,"#000000"],[12,27,"#000000"],[13,27,"#000000"],[14,27,"#ef233c"],[15,27,"#ef233c"],[16,27,"#ef233c"],[17,27,"#ef233c"],[18,27,"#ef233c"],[19,27,"#ef233c"],[20,27,"#ef233c"],[21,27,"#ef233c"],[22,27,"#ef233c"],[23,27,"#ef233c"],[24,27,"#ef233c"],[25,27,"#ef233c"],[26,27,"#000000"],[27,27,"#000000"],[29,27,"#000000"],[30,27,"#ef233c"],[31,27,"#000000"],[9,28,"#000000"],[11,28,"#000000"],[12,28,"#ef233c"],[13,28,"#ef233c"],[14,28,"#000000"],[15,28,"#000000"],[16,28,"#ef233c"],[17,28,"#ef233c"],[18,28,"#ef233c"],[19,28,"#ef233c"],[20,28,"#ef233c"],[21,28,"#ef233c"],[22,28,"#ef233c"],[23,28,"#ef233c"],[24,28,"#000000"],[25,28,"#000000"],[26,28,"#ef233c"],[27,28,"#ef233c"],[28,28,"#000000"],[30,28,"#000000"],[11,29,"#000000"],[12,29,"#ef233c"],[13,29,"#000000"],[16,29,"#000000"],[17,29,"#000000"],[18,29,"#000000"],[19,29,"#000000"],[20,29,"#000000"],[21,29,"#000000"],[22,29,"#000000"],[23,29,"#000000"],[24,29,"#000000"],[26,29,"#000000"],[27,29,"#ef233c"],[28,29,"#000000"],[12,30,"#000000"],[27,30,"#000000"]];
+
+// 10 body parts
+const PARTS = {
+  leftClaw:      { color: '#ffd93d', label: 'Left Claw' },
+  rightClaw:     { color: '#ff8c00', label: 'Right Claw' },
+  leftEye:       { color: '#ffffff', label: 'Left Eye' },
+  rightEye:      { color: '#aaaaff', label: 'Right Eye' },
+  mouth:         { color: '#e0e0e0', label: 'Mouth' },
+  body:          { color: '#4d96ff', label: 'Body' },
+  legUpperLeft:  { color: '#9b59b6', label: 'Upper Left Leg' },
+  legLowerLeft:  { color: '#c39bd3', label: 'Lower Left Leg' },
+  legUpperRight: { color: '#e91e9b', label: 'Upper Right Leg' },
+  legLowerRight: { color: '#f48fb1', label: 'Lower Right Leg' },
+  outline:       { color: '#555555', label: 'Outline' },
+};
+
+function classifyPixel(x, y, color) {
+  // 1. Face features FIRST (black pixels that are NOT outline)
+  if ((y === 18 || y === 19) && (x === 15 || x === 16)) return 'leftEye';
+  if ((y === 18 || y === 19) && (x === 23 || x === 24)) return 'rightEye';
+  if (y === 20 && x >= 18 && x <= 21) return 'mouth';
+
+  // 2. All other black = outline
+  if (color === '#000000') return 'outline';
+
+  // 3. Claws (includes the top tips that stick up at y=11-12)
+  if (y <= 20 && x <= 10) return 'leftClaw';
+  if (y <= 20 && x >= 29) return 'rightClaw';
+
+  // 4. Individual legs (separated from body by black gaps)
+  if (y >= 25) {
+    // Upper left leg
+    if (y === 25 && x === 10) return 'legUpperLeft';
+    if (y === 26 && (x === 9 || x === 10)) return 'legUpperLeft';
+    if (y === 27 && x === 9) return 'legUpperLeft';
+    // Lower left leg
+    if (y === 28 && (x === 12 || x === 13)) return 'legLowerLeft';
+    if (y === 29 && x === 12) return 'legLowerLeft';
+    // Upper right leg
+    if (y === 25 && x === 29) return 'legUpperRight';
+    if (y === 26 && (x === 29 || x === 30)) return 'legUpperRight';
+    if (y === 27 && x === 30) return 'legUpperRight';
+    // Lower right leg
+    if (y === 28 && (x === 26 || x === 27)) return 'legLowerRight';
+    if (y === 29 && x === 27) return 'legLowerRight';
+  }
+
+  // 5. Everything else = body
+  return 'body';
+}
+
+const SCALE = 16;
+const OX = -3 * SCALE;
+const OY = -10 * SCALE;
+
+function draw(canvasId, mode) {
+  const ctx = document.getElementById(canvasId).getContext('2d');
+  ctx.fillStyle = '#1a1a2e';
+  ctx.fillRect(0, 0, 640, 400);
+
+  ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+  for (let i = 0; i <= 40; i++) {
+    ctx.beginPath(); ctx.moveTo(i*SCALE, 0); ctx.lineTo(i*SCALE, 400); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, i*SCALE); ctx.lineTo(640, i*SCALE); ctx.stroke();
+  }
+
+  PIXELS.forEach(([x, y, color]) => {
+    const part = classifyPixel(x, y, color);
+    ctx.fillStyle = mode === 'anatomy' ? (PARTS[part]?.color || '#888') : color;
+    ctx.fillRect(x * SCALE + OX, y * SCALE + OY, SCALE, SCALE);
+  });
+}
+
+draw('anatomy', 'anatomy');
+draw('original', 'original');
+
+const legendEl = document.getElementById('legend');
+Object.entries(PARTS).forEach(([key, info]) => {
+  const item = document.createElement('div');
+  item.className = 'legend-item';
+  item.innerHTML = `<div class="legend-swatch" style="background:${info.color}"></div><div><span class="legend-label">${info.label}</span></div>`;
+  legendEl.appendChild(item);
+});
+</script>
+</body>
+</html>
