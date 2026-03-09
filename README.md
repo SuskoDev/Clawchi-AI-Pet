@@ -49,30 +49,55 @@ Clawchi is a tiny pixel-art crab that lives in your browser. Connect it to your 
 Your AI Agent  ──POST──>  Cloudflare Relay  ──poll──>  Chrome Extension  ──>  Crab Animates!
 ```
 
-1. Copy the **Agent Prompt** from Clawchi settings into your AI tool
-2. Your AI sends state updates (`thinking`, `working`, `celebrating`, etc.) to the Clawchi relay
-3. The extension polls every 1.5 seconds and updates your crab's animation
-4. That's it. Your crab now reflects what your AI is doing.
+1. Deploy your own relay server (see below)
+2. Paste the relay URL into Clawchi settings
+3. Copy the **Agent Prompt** and paste it into your AI tool
+4. Your AI sends state updates and your crab animates accordingly
 
 ## Installation
 
-### From Source (Developer)
+### Step 1: Load the Extension
 
 1. Clone this repo:
    ```bash
-   git clone https://github.com/molanga183/clawchi.git
+   git clone https://github.com/SuskoDev/Clawchi-AI-Pet.git
    ```
 2. Open Chrome and go to `chrome://extensions`
 3. Enable **Developer mode** (top right toggle)
 4. Click **Load unpacked** and select the cloned folder
-5. Click the Clawchi icon in your toolbar
+5. Click the Clawchi icon in your toolbar — your crab is alive!
 
-### Connect to Your AI
+### Step 2: Deploy Your Relay Server
+
+Each user needs their own relay. It's free and takes 2 minutes:
+
+1. Install [Wrangler](https://developers.cloudflare.com/workers/wrangler/) (Cloudflare's CLI):
+   ```bash
+   npm install -g wrangler
+   ```
+2. Log in to Cloudflare:
+   ```bash
+   wrangler login
+   ```
+3. Create a KV namespace:
+   ```bash
+   wrangler kv namespace create CLAWCHI_KV
+   ```
+4. Copy the `id` from the output and paste it into `cloudflare-worker/wrangler.toml`, replacing `REPLACE_WITH_YOUR_KV_NAMESPACE_ID`
+5. Deploy:
+   ```bash
+   cd cloudflare-worker
+   wrangler deploy
+   ```
+6. Your relay is now live at `https://clawchi-relay.YOUR_SUBDOMAIN.workers.dev`
+
+### Step 3: Connect Everything
 
 1. Open Clawchi popup > **Settings** > scroll to **Agent Link**
-2. Toggle the relay **ON**
-3. Click **COPY AGENT PROMPT** and paste it into your AI tool's system prompt or rules
-4. (Optional) Click **COPY BRAIN PROMPT** for crab personality quips
+2. Paste your relay URL into the **RELAY URL** field
+3. Toggle the relay **ON**
+4. Click **COPY AGENT PROMPT** and paste it into your AI tool's system prompt or rules
+5. (Optional) Click **COPY BRAIN PROMPT** for crab personality quips
 
 ## Tech Stack
 
@@ -85,24 +110,29 @@ Your AI Agent  ──POST──>  Cloudflare Relay  ──poll──>  Chrome Ex
 ## Project Structure
 
 ```
-clawchi/
-  manifest.json        # Extension config (MV3)
-  background.js        # Service worker: state management, relay polling
-  content.js           # Desktop overlay: crab rendering, walking, dragging
-  popup.html           # Popup UI structure
-  popup.js             # Popup logic: stats, accessories, settings, food
-  popup.css            # All popup styles
-  icons/               # Extension icons (16, 48, 128px)
-  sprites/             # Pixel art JSON sprites
-    idle.json          # Default crab pose
-    thinking.json      # Thinking animation
-    working.json       # Working animation
-    sleeping.json      # Sleeping animation (with Z's)
-    accessories/       # 18 equippable accessory sprites
-    food/              # 7 drag-and-drop food items
-  cloudflare-worker/   # Relay server
-    worker.js          # Cloudflare Worker source
-    wrangler.toml      # Deployment config
+Clawchi-AI-Pet/
+  manifest.json          # Extension config (MV3)
+  background.js          # Service worker: state management, relay polling
+  content.js             # Desktop overlay: crab rendering, walking, dragging
+  popup.html             # Popup UI structure
+  popup.js               # Popup logic: stats, accessories, settings, food
+  popup.css              # All popup styles
+  icons/                 # Extension icons (16, 48, 128px)
+  sprites/               # Pixel art JSON sprites
+    base-crab.json       # Default crab pose
+    thinking.json        # Thinking animation
+    working.json         # Working animation
+    sleeping.json        # Sleeping animation (with Z's)
+    accessories/         # 18 equippable accessory sprites
+    food/                # 7 drag-and-drop food items (PNG)
+  cloudflare-worker/     # Relay server
+    worker.js            # Cloudflare Worker source
+    wrangler.toml        # Deployment config (add your KV ID here)
+    DEPLOY.md            # Quick deployment guide
+  dev-tools/             # Developer utilities
+    crab-anatomy.html    # Sprite anatomy viewer
+    crab-animations.html # Animation tester
+    relay-test.html      # Relay endpoint tester
 ```
 
 ## Privacy
@@ -112,8 +142,9 @@ Clawchi does not read, collect, or transmit any browsing data. Ever.
 - The Desktop Mode overlay is purely visual (a crab walking on your screen)
 - The relay only stores your crab's state (idle/thinking/working) with a random anonymous ID
 - All state data auto-expires after 5 minutes
+- You host your own relay — your data stays on your Cloudflare account
 - No analytics, no tracking, no cookies
-- Fully open source - read every line yourself
+- Fully open source — read every line yourself
 
 ## Contributing
 

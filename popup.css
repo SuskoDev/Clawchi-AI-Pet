@@ -1206,6 +1206,34 @@ body.in-window #app { height: 100vh; }
   margin-bottom: 4px;
 }
 
+.agent-link-url-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 5px;
+  padding: 5px 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+}
+
+.relay-url-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #5ec4d0;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 6px;
+  letter-spacing: 0.3px;
+  min-width: 0;
+}
+
+.relay-url-input::placeholder {
+  color: rgba(94, 196, 208, 0.35);
+  font-size: 6px;
+}
+
 .agent-link-id-row {
   display: flex;
   align-items: center;

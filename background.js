@@ -389,9 +389,18 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
 // ══════════════════════════════════════════════════
 //  RELAY POLLING (polls centralized Clawchi relay)
 // ══════════════════════════════════════════════════
-const RELAY_BASE = "https://clawchi-relay.molanga183.workers.dev";
+let RELAY_BASE = "";  // loaded from storage — users set their own relay URL
 let relayPollTimer = null;
 let lastRelayTs = 0;
+
+// Load relay URL from storage on startup
+chrome.storage.local.get(["relayUrl"], (d) => {
+  if (d.relayUrl) RELAY_BASE = d.relayUrl;
+});
+// Keep it in sync if user changes it
+chrome.storage.onChanged.addListener((changes) => {
+  if (changes.relayUrl) RELAY_BASE = changes.relayUrl.newValue || "";
+});
 
 function startRelayPoll() {
   stopRelayPoll();
@@ -407,8 +416,8 @@ const DEFAULT_AGENT_COLORS = [210, 120, 270, 25, 330, 175, 50, 0];
 
 async function pollRelay() {
   try {
-    const data = await chrome.storage.local.get(["relayEnabled", "clawchiId", "subAgentsEnabled", "subAgentColors"]);
-    if (!data.relayEnabled || !data.clawchiId) return;
+    const data = await chrome.storage.local.get(["relayEnabled", "clawchiId", "subAgentsEnabled", "subAgentColors", "relayUrl"]);
+    if (!data.relayEnabled || !data.clawchiId || !RELAY_BASE) return;
 
     const resp = await fetch(`${RELAY_BASE}/state/${data.clawchiId}`);
     if (!resp.ok) return;

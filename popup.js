@@ -2221,18 +2221,31 @@ chrome.runtime.onMessage.addListener(msg => {
 //  AGENT LINK (relay ID + copy buttons)
 // ══════════════════════════════════════════════════
 
-const RELAY_BASE_URL = "https://clawchi-relay.molanga183.workers.dev";
+let RELAY_BASE_URL = "";  // loaded from storage
 
 async function initAgentLink() {
   const relayToggle = document.getElementById("relay-toggle");
   const idDisplay = document.getElementById("clawchi-id-display");
+  const relayUrlInput = document.getElementById("relay-url-input");
 
-  // Load state + ensure ID exists
-  const data = await chrome.storage.local.get(["relayEnabled"]);
+  // Load state + relay URL
+  const data = await chrome.storage.local.get(["relayEnabled", "relayUrl"]);
+  if (data.relayUrl) {
+    RELAY_BASE_URL = data.relayUrl;
+    relayUrlInput.value = data.relayUrl;
+  }
   if (data.relayEnabled) {
     relayToggle.textContent = "ON";
     relayToggle.classList.add("active");
   }
+
+  // Save relay URL on change
+  relayUrlInput.addEventListener("change", () => {
+    const url = relayUrlInput.value.trim().replace(/\/+$/, "");
+    relayUrlInput.value = url;
+    RELAY_BASE_URL = url;
+    chrome.storage.local.set({ relayUrl: url });
+  });
 
   try {
     const resp = await chrome.runtime.sendMessage({ type: "GET_CLAWCHI_ID" });
@@ -2277,7 +2290,7 @@ async function initAgentLink() {
 
   // Open test page
   document.getElementById("open-relay-test").addEventListener("click", () => {
-    chrome.tabs.create({ url: chrome.runtime.getURL("relay-test.html") });
+    chrome.tabs.create({ url: chrome.runtime.getURL("dev-tools/relay-test.html") });
   });
 }
 

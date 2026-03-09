@@ -33,7 +33,7 @@
       "resources": [
         "sprites/*.json",
         "sprites/accessories/*.json",
-        "relay-test.html"
+        "dev-tools/relay-test.html"
       ],
       "matches": ["<all_urls>"]
     }
