@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clawchi — Your AI Agent's Pixel-Art Crab Companion</title>
+<meta name="description" content="A Tamagotchi-style Chrome extension that shows what your AI is doing in real time. Open source, zero tracking.">
+<link rel="icon" href="../icons/icon48.png">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+:root {
+  --deep: #060a1a;
+  --ocean: #0a0e27;
+  --mid: #111638;
+  --surface: #1a1f4a;
+  --glow: #5ec4d0;
+  --glow-dim: rgba(94,196,208,0.15);
+  --glow-bright: rgba(94,196,208,0.5);
+  --coral: #ef233c;
+  --coral-dim: rgba(239,35,60,0.2);
+  --sand: #e8d5a3;
+  --foam: #e0f4f8;
+  --font-pixel: 'Press Start 2P', monospace;
+  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--deep);
+  color: var(--foam);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+/* ═══ BACKGROUND OCEAN ═══ */
+.ocean-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 120% 80% at 50% 100%, rgba(10,30,60,0.9) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 50% at 20% 20%, rgba(94,196,208,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 60%, rgba(239,35,60,0.03) 0%, transparent 60%),
+    linear-gradient(175deg, var(--deep) 0%, var(--ocean) 40%, #0d1230 100%);
+}
+
+/* Animated bubbles */
+.bubbles {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.bubble {
+  position: absolute;
+  bottom: -20px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(94,196,208,0.12), rgba(94,196,208,0.03));
+  border: 1px solid rgba(94,196,208,0.06);
+  animation: rise linear infinite;
+}
+@keyframes rise {
+  0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-110vh) translateX(40px) scale(0.6); opacity: 0; }
+}
+
+/* Scanlines overlay */
+.scanlines {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.03) 2px,
+    rgba(0,0,0,0.03) 4px
+  );
+}
+
+/* ═══ NAVIGATION ═══ */
+nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 100;
+  padding: 16px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(6,10,26,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(94,196,208,0.08);
+}
+.nav-logo {
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  color: var(--glow);
+  text-decoration: none;
+  letter-spacing: 2px;
+}
+.nav-logo span { color: var(--coral); }
+.nav-links { display: flex; gap: 28px; }
+.nav-links a {
+  font-family: var(--font-pixel);
+  font-size: 8px;
+  color: rgba(224,244,248,0.5);
+  text-decoration: none;
+  letter-spacing: 1px;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--glow); }
+
+/* ═══ HERO ═══ */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120px 24px 60px;
+  text-align: center;
+  position: relative;
+}
+
+.hero-badge {
+  font-family: var(--font-pixel);
+  font-size: 7px;
+  color: var(--glow);
+  background: var(--glow-dim);
+  border: 1px solid rgba(94,196,208,0.2);
+  padding: 6px 14px;
+  border-radius: 2px;
+  letter-spacing: 2px;
+  margin-bottom: 32px;
+  animation: fadeSlideIn 0.8s ease both;
+}
+
+.hero h1 {
+  font-family: var(--font-pixel);
+  font-size: clamp(28px, 5vw, 52px);
+  color: var(--foam);
+  letter-spacing: 4px;
+  margin-bottom: 8px;
+  animation: fadeSlideIn 0.8s ease 0.15s both;
+}
+.hero h1 .accent { color: var(--coral); }
+
+.hero-sub {
+  font-size: clamp(14px, 2vw, 18px);
+  color: rgba(224,244,248,0.55);
+  max-width: 520px;
+  margin-bottom: 48px;
+  line-height: 1.7;
+  animation: fadeSlideIn 0.8s ease 0.3s both;
+}
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══ CRAB STAGE ═══ */
+.crab-stage {
+  position: relative;
+  width: clamp(220px, 40vw, 340px);
+  height: clamp(220px, 40vw, 340px);
+  margin: 0 auto 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeSlideIn 0.8s ease 0.45s both;
+}
+
+/* Glow ring behind crab */
+.crab-stage::before {
+  content: '';
+  position: absolute;
+  width: 80%;
+  height: 80%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(94,196,208,0.1) 0%, transparent 70%);
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+@keyframes pulseGlow {
+  0%,100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+
+/* Floor shadow */
+.crab-stage::after {
+  content: '';
+  position: absolute;
+  bottom: 15%;
+  width: 50%;
+  height: 8px;
+  background: radial-gradient(ellipse, rgba(0,0,0,0.35), transparent);
+  border-radius: 50%;
+}
+
+#hero-crab-svg {
+  position: relative;
+  z-index: 2;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 4px 20px rgba(94,196,208,0.15));
+  transition: transform 0.3s ease;
+}
+
+.crab-stage:hover #hero-crab-svg {
+  transform: scale(1.05);
+}
+
+/* Idle breathing */
+.breathe { animation: breathe 3s ease-in-out infinite; }
+@keyframes breathe {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+/* State message */
+.state-message {
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  color: var(--glow);
+  text-align: center;
+  min-height: 20px;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+/* ═══ STATE CONTROLS ═══ */
+.state-controls {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 20px;
+  animation: fadeSlideIn 0.8s ease 0.6s both;
+}
+.state-btn {
+  font-family: var(--font-pixel);
+  font-size: 8px;
+  padding: 10px 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1.5px solid rgba(255,255,255,0.08);
+  border-radius: 3px;
+  color: rgba(224,244,248,0.5);
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 1px;
+}
+.state-btn:hover {
+  border-color: var(--glow-bright);
+  color: var(--glow);
+  background: var(--glow-dim);
+}
+.state-btn.active {
+  border-color: var(--glow);
+  color: var(--foam);
+  background: rgba(94,196,208,0.2);
+  box-shadow: 0 0 16px rgba(94,196,208,0.15);
+}
+
+/* Accessory toggle row */
+.acc-controls {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+  animation: fadeSlideIn 0.8s ease 0.75s both;
+}
+.acc-btn {
+  font-family: var(--font-pixel);
+  font-size: 6px;
+  padding: 6px 10px;
+  background: transparent;
+  border: 1px solid rgba(239,35,60,0.15);
+  border-radius: 2px;
+  color: rgba(224,244,248,0.35);
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+}
+.acc-btn:hover {
+  border-color: rgba(239,35,60,0.4);
+  color: rgba(224,244,248,0.7);
+}
+.acc-btn.active {
+  border-color: var(--coral);
+  color: var(--coral);
+  background: var(--coral-dim);
+}
+
+/* ═══ SECTION SHARED ═══ */
+section {
+  padding: 100px 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.section-tag {
+  font-family: var(--font-pixel);
+  font-size: 7px;
+  color: var(--coral);
+  letter-spacing: 3px;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+.section-title {
+  font-family: var(--font-pixel);
+  font-size: clamp(16px, 2.5vw, 24px);
+  color: var(--foam);
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.section-desc {
+  color: rgba(224,244,248,0.5);
+  font-size: 15px;
+  max-width: 560px;
+  line-height: 1.7;
+  margin-bottom: 48px;
+}
+
+/* ═══ HOW IT WORKS ═══ */
+.flow-diagram {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  flex-wrap: wrap;
+  margin-bottom: 48px;
+  padding: 32px 20px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 4px;
+}
+.flow-node {
+  font-family: var(--font-pixel);
+  font-size: 8px;
+  padding: 12px 18px;
+  background: var(--glow-dim);
+  border: 1px solid rgba(94,196,208,0.2);
+  border-radius: 3px;
+  color: var(--glow);
+  letter-spacing: 1px;
+  text-align: center;
+  white-space: nowrap;
+}
+.flow-arrow {
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  color: rgba(94,196,208,0.3);
+  padding: 0 12px;
+}
+
+/* ═══ FEATURES GRID ═══ */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.feature-card {
+  padding: 28px 24px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  opacity: 0;
+  transform: translateY(30px);
+}
+.feature-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.feature-card:hover {
+  border-color: rgba(94,196,208,0.15);
+  background: rgba(94,196,208,0.03);
+  transform: translateY(-2px);
+}
+.feature-icon {
+  font-size: 24px;
+  margin-bottom: 16px;
+  display: block;
+}
+.feature-card h3 {
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  color: var(--foam);
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+.feature-card p {
+  font-size: 13px;
+  color: rgba(224,244,248,0.45);
+  line-height: 1.6;
+}
+
+/* ═══ GET STARTED ═══ */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  margin-bottom: 48px;
+}
+.step {
+  padding: 24px 20px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 4px;
+  position: relative;
+  opacity: 0;
+  transform: translateY(30px);
+}
+.step.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.step-num {
+  font-family: var(--font-pixel);
+  font-size: 28px;
+  color: rgba(94,196,208,0.12);
+  position: absolute;
+  top: 12px;
+  right: 16px;
+}
+.step h4 {
+  font-family: var(--font-pixel);
+  font-size: 8px;
+  color: var(--glow);
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+.step p {
+  font-size: 13px;
+  color: rgba(224,244,248,0.45);
+  line-height: 1.6;
+}
+.step code {
+  font-family: var(--font-pixel);
+  font-size: 7px;
+  background: rgba(0,0,0,0.3);
+  padding: 3px 6px;
+  border-radius: 2px;
+  color: var(--glow);
+  display: inline-block;
+  margin-top: 6px;
+}
+
+.cta-row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.cta-btn {
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  padding: 14px 28px;
+  text-decoration: none;
+  letter-spacing: 1.5px;
+  border-radius: 3px;
+  transition: all 0.25s;
+  display: inline-block;
+}
+.cta-primary {
+  background: var(--coral);
+  color: #fff;
+  border: 2px solid var(--coral);
+}
+.cta-primary:hover {
+  background: transparent;
+  color: var(--coral);
+  box-shadow: 0 0 20px rgba(239,35,60,0.2);
+}
+.cta-secondary {
+  background: transparent;
+  color: var(--glow);
+  border: 2px solid rgba(94,196,208,0.3);
+}
+.cta-secondary:hover {
+  border-color: var(--glow);
+  box-shadow: 0 0 20px rgba(94,196,208,0.15);
+}
+
+/* ═══ FOOTER ═══ */
+footer {
+  text-align: center;
+  padding: 48px 24px;
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+footer p {
+  font-family: var(--font-pixel);
+  font-size: 7px;
+  color: rgba(224,244,248,0.25);
+  letter-spacing: 1px;
+}
+footer a {
+  color: rgba(94,196,208,0.4);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+footer a:hover { color: var(--glow); }
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width: 640px) {
+  nav { padding: 12px 16px; }
+  .nav-links { gap: 14px; }
+  .nav-links a { font-size: 7px; }
+  .flow-diagram { flex-direction: column; gap: 8px; }
+  .flow-arrow { transform: rotate(90deg); padding: 4px 0; }
+  .state-controls { gap: 6px; }
+  .state-btn { padding: 8px 12px; font-size: 7px; }
+}
+</style>
+</head>
+<body>
+
+<div class="ocean-bg"></div>
+<div class="bubbles" id="bubbles"></div>
+<div class="scanlines"></div>
+
+<nav>
+  <a href="#" class="nav-logo"><span>🦀</span> CLAWCHI</a>
+  <div class="nav-links">
+    <a href="#features">FEATURES</a>
+    <a href="#start">GET STARTED</a>
+    <a href="https://github.com/SuskoDev/Clawchi-AI-Pet" target="_blank">GITHUB</a>
+  </div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+  <div class="hero-badge">OPEN SOURCE &bull; ZERO TRACKING &bull; v0.1.0</div>
+  <h1>CLAW<span class="accent">CHI</span></h1>
+  <p class="hero-sub">A tiny pixel-art crab that lives in your browser and shows what your AI agent is doing — in real time.</p>
+
+  <div class="crab-stage">
+    <svg id="hero-crab-svg" class="breathe" xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+
+  <div class="state-message" id="state-msg">IDLE</div>
+
+  <div class="state-controls" id="state-controls">
+    <button class="state-btn active" data-state="idle">IDLE</button>
+    <button class="state-btn" data-state="thinking">THINKING</button>
+    <button class="state-btn" data-state="working">WORKING</button>
+    <button class="state-btn" data-state="sleeping">SLEEPING</button>
+  </div>
+
+  <div class="acc-controls" id="acc-controls">
+    <button class="acc-btn" data-acc="crown">CROWN</button>
+    <button class="acc-btn" data-acc="sunglasses">SHADES</button>
+    <button class="acc-btn" data-acc="wizard-hat">WIZARD</button>
+    <button class="acc-btn" data-acc="gold-chain">CHAIN</button>
+    <button class="acc-btn" data-acc="headphones">MUSIC</button>
+    <button class="acc-btn" data-acc="top-hat">TOP HAT</button>
+  </div>
+</div>
+
+<!-- ═══ HOW IT WORKS ═══ -->
+<section>
+  <div class="section-tag">// HOW IT WORKS</div>
+  <div class="section-title">ONE CURL. LIVE CRAB.</div>
+  <div class="section-desc">Your AI agent sends state updates to a lightweight relay. The extension polls it and your crab reacts instantly.</div>
+  <div class="flow-diagram">
+    <div class="flow-node">YOUR AI AGENT</div>
+    <div class="flow-arrow">──▶</div>
+    <div class="flow-node">CLOUDFLARE RELAY</div>
+    <div class="flow-arrow">──▶</div>
+    <div class="flow-node">CHROME EXTENSION</div>
+    <div class="flow-arrow">──▶</div>
+    <div class="flow-node" style="border-color: var(--coral); color: var(--coral);">🦀 CRAB ANIMATES</div>
+  </div>
+</section>
+
+<!-- ═══ FEATURES ═══ -->
+<section id="features">
+  <div class="section-tag">// FEATURES</div>
+  <div class="section-title">EVERYTHING YOUR CRAB NEEDS</div>
+  <div class="section-desc">Not just a status indicator. A full companion that grows with you.</div>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <span class="feature-icon">🔴</span>
+      <h3>LIVE AI STATUS</h3>
+      <p>Your crab animates based on what your AI is doing — thinking, working, celebrating, sleeping, or waiting for input.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">🖥️</span>
+      <h3>DESKTOP MODE</h3>
+      <p>The crab walks around on every web page you visit. Drag it anywhere. It lives on your screen.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">🦀</span>
+      <h3>SUB-AGENTS</h3>
+      <p>Mini crabs auto-spawn when your AI runs parallel tasks. Each one shows its own status message.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">🍔</span>
+      <h3>DRAG & DROP FOOD</h3>
+      <p>Feed your crab pixel-art sushi, pizza, burgers, and more. Drag food onto the crab and watch it munch.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">⭐</span>
+      <h3>XP & LEVELS</h3>
+      <p>Your crab levels up the more you interact. Track streaks, earn XP, and watch your companion grow.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">👑</span>
+      <h3>18 ACCESSORIES</h3>
+      <p>Crown, wizard hat, sunglasses, gold chain, angel wings, headphones — equip them all.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">🎨</span>
+      <h3>CUSTOM COLORS</h3>
+      <p>8 crab color options. Make it yours. Accessories keep their original colors.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">💧</span>
+      <h3>HYDRATION REMINDERS</h3>
+      <p>Your crab reminds you to drink water. Because someone has to.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">🔒</span>
+      <h3>100% PRIVATE</h3>
+      <p>Zero dependencies. Zero tracking. Zero cookies. You host your own relay. Read every line of code.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ GET STARTED ═══ -->
+<section id="start">
+  <div class="section-tag">// GET STARTED</div>
+  <div class="section-title">3 STEPS TO A LIVING CRAB</div>
+  <div class="section-desc">Clone, deploy, connect. Takes about 5 minutes.</div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <h4>LOAD THE EXTENSION</h4>
+      <p>Clone the repo, open chrome://extensions, enable Developer mode, and load the folder.</p>
+      <code>git clone https://github.com/SuskoDev/Clawchi-AI-Pet.git</code>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <h4>DEPLOY YOUR RELAY</h4>
+      <p>Create a free Cloudflare Worker. It takes 2 minutes and costs nothing.</p>
+      <code>cd cloudflare-worker && wrangler deploy</code>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <h4>CONNECT YOUR AI</h4>
+      <p>Paste the relay URL in settings, copy the Agent Prompt, and paste it into your AI tool.</p>
+      <code>COPY AGENT PROMPT → PASTE INTO AI</code>
+    </div>
+  </div>
+
+  <div class="cta-row">
+    <a href="https://github.com/SuskoDev/Clawchi-AI-Pet" target="_blank" class="cta-btn cta-primary">VIEW ON GITHUB</a>
+    <a href="https://github.com/SuskoDev/Clawchi-AI-Pet/releases" target="_blank" class="cta-btn cta-secondary">DOWNLOAD v0.1.0</a>
+  </div>
+</section>
+
+<footer>
+  <p>MADE WITH CLAW-VE BY THE <a href="https://github.com/SuskoDev/Clawchi-AI-Pet" target="_blank">CLAWCHI TEAM</a> &bull; MIT LICENSE &bull; 2025</p>
+</footer>
+
+<script>
+/* ═══════════════════════════════════════
+   SPRITE RENDERER
+   ═══════════════════════════════════════ */
+const SVGNS = "http://www.w3.org/2000/svg";
+const heroSvg = document.getElementById("hero-crab-svg");
+
+const sprites = {};
+const accessories = {};
+let currentState = "idle";
+let equippedAccs = new Set();
+let overlayTimers = [];
+
+const STATE_MESSAGES = {
+  idle: "JUST VIBIN'...",
+  thinking: "HMMMM... PROCESSING...",
+  working: "BUILDING SOMETHING COOL!",
+  sleeping: "ZZZZZZ..."
+};
+
+async function loadSprites() {
+  const names = ["idle", "sleeping", "thinking", "working"];
+  const files = ["base-crab.json", "sleeping.json", "thinking.json", "working.json"];
+  const results = await Promise.all(files.map(f => fetch("../sprites/" + f).then(r => r.json())));
+  names.forEach((n, i) => sprites[n] = results[i]);
+}
+
+async function loadAccessories() {
+  const names = ["crown", "sunglasses", "wizard-hat", "gold-chain", "headphones", "top-hat"];
+  const results = await Promise.all(names.map(n => fetch("../sprites/accessories/" + n + ".json").then(r => r.json())));
+  names.forEach((n, i) => accessories[n] = results[i]);
+}
+
+function svgRect(x, y, fill) {
+  const r = document.createElementNS(SVGNS, "rect");
+  r.setAttribute("x", x - 0.03);
+  r.setAttribute("y", y - 0.03);
+  r.setAttribute("width", 1.06);
+  r.setAttribute("height", 1.06);
+  r.setAttribute("fill", fill);
+  r.setAttribute("shape-rendering", "crispEdges");
+  return r;
+}
+
+function computeViewBox(pixels, overlays, accPixels) {
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  const update = p => {
+    if (p.x < minX) minX = p.x;
+    if (p.y < minY) minY = p.y;
+    if (p.x + 1 > maxX) maxX = p.x + 1;
+    if (p.y + 1 > maxY) maxY = p.y + 1;
+  };
+  pixels.forEach(update);
+  if (overlays) overlays.forEach(o => o.frames.forEach(f => f.forEach(update)));
+  if (accPixels) accPixels.forEach(update);
+  return `${minX - 1} ${minY - 1} ${maxX - minX + 2} ${maxY - minY + 2}`;
+}
+
+function getAccPixels() {
+  const order = ["back", "shoes", "collar", "glasses", "hat"];
+  const pixels = [];
+  const byCategory = {};
+  for (const [name, acc] of Object.entries(accessories)) {
+    if (equippedAccs.has(name)) byCategory[acc.category] = acc;
+  }
+  for (const cat of order) {
+    if (byCategory[cat]) pixels.push(...byCategory[cat].pixels);
+  }
+  return pixels;
+}
+
+function clearOverlays() {
+  overlayTimers.forEach(t => clearInterval(t));
+  overlayTimers = [];
+}
+
+function renderOverlay(overlayDef, parentGroup) {
+  if (!overlayDef.frames || overlayDef.frames.length === 0) return;
+  const groups = overlayDef.frames.map((frame, i) => {
+    const g = document.createElementNS(SVGNS, "g");
+    g.setAttribute("data-overlay-frame", i);
+    g.style.display = i === 0 ? "block" : "none";
+    for (const p of frame) g.appendChild(svgRect(p.x, p.y, p.color));
+    parentGroup.appendChild(g);
+    return g;
+  });
+  if (groups.length > 1) {
+    let idx = 0;
+    const dur = overlayDef.frameDuration || 800;
+    const timer = setInterval(() => {
+      groups[idx].style.display = "none";
+      idx = (idx + 1) % groups.length;
+      groups[idx].style.display = "block";
+    }, dur);
+    overlayTimers.push(timer);
+  }
+}
+
+function renderCrab() {
+  clearOverlays();
+  let key = currentState;
+  if (!sprites[key]) key = "idle";
+  const sprite = sprites[key];
+  if (!sprite) return;
+
+  const accPixels = getAccPixels();
+  const vb = computeViewBox(sprite.base, sprite.overlays, accPixels);
+  const parts = vb.split(" ").map(Number);
+  const size = 240;
+
+  heroSvg.setAttribute("viewBox", vb);
+  heroSvg.setAttribute("width", size);
+  heroSvg.setAttribute("height", Math.round(size * (parts[3] / parts[2])));
+  heroSvg.innerHTML = "";
+
+  // Body group (color-filterable)
+  const bodyGroup = document.createElementNS(SVGNS, "g");
+  bodyGroup.id = "crab-body";
+  for (const p of sprite.base) bodyGroup.appendChild(svgRect(p.x, p.y, p.color));
+  heroSvg.appendChild(bodyGroup);
+
+  // Overlays (animated parts)
+  if (sprite.overlays) {
+    for (const o of sprite.overlays) renderOverlay(o, bodyGroup);
+  }
+
+  // Accessories (outside body group, no filter)
+  for (const p of accPixels) heroSvg.appendChild(svgRect(p.x, p.y, p.color));
+
+  // Update message
+  document.getElementById("state-msg").textContent = STATE_MESSAGES[currentState] || "";
+
+  // Update breathing class
+  heroSvg.className.baseVal = currentState === "sleeping" ? "" : "breathe";
+}
+
+/* ═══ STATE BUTTONS ═══ */
+document.querySelectorAll(".state-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".state-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentState = btn.dataset.state;
+    renderCrab();
+  });
+});
+
+/* ═══ ACCESSORY BUTTONS ═══ */
+document.querySelectorAll(".acc-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const name = btn.dataset.acc;
+    if (equippedAccs.has(name)) {
+      equippedAccs.delete(name);
+      btn.classList.remove("active");
+    } else {
+      equippedAccs.add(name);
+      btn.classList.add("active");
+    }
+    renderCrab();
+  });
+});
+
+/* ═══ BUBBLES ═══ */
+function createBubbles() {
+  const container = document.getElementById("bubbles");
+  for (let i = 0; i < 15; i++) {
+    const b = document.createElement("div");
+    b.classList.add("bubble");
+    const size = 6 + Math.random() * 30;
+    b.style.width = size + "px";
+    b.style.height = size + "px";
+    b.style.left = Math.random() * 100 + "%";
+    b.style.animationDuration = (12 + Math.random() * 20) + "s";
+    b.style.animationDelay = (Math.random() * 15) + "s";
+    container.appendChild(b);
+  }
+}
+
+/* ═══ SCROLL REVEAL ═══ */
+function revealOnScroll() {
+  const els = document.querySelectorAll(".feature-card, .step");
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add("visible"), i * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  els.forEach(el => observer.observe(el));
+}
+
+/* ═══ INIT ═══ */
+async function init() {
+  createBubbles();
+  revealOnScroll();
+  try {
+    await Promise.all([loadSprites(), loadAccessories()]);
+    renderCrab();
+  } catch (e) {
+    console.warn("Could not load sprites — demo page must be served from the extension directory.", e);
+    document.getElementById("state-msg").textContent = "SERVE FROM EXTENSION DIR TO SEE LIVE CRAB";
+  }
+}
+
+init();
+</script>
+</body>
+</html>
