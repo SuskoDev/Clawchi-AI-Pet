@@ -1,10 +1,29 @@
 /**
- * Clawchi Relay — Cloudflare Worker
- * One server for all users. Each user identified by their clawchiId.
- * KV key = "state:{clawchiId}", auto-expires after 5 minutes.
+ * @file Clawchi Relay — Cloudflare Worker
+ * @version 0.1.0
+ * @author SuskoDev
+ * @license MIT
+ * @see {@link https://github.com/SuskoDev/Clawchi-AI-Pet}
  *
- * POST /state/:id  — AI agent writes state
- * GET  /state/:id  — Extension polls for state
+ * @description
+ * Lightweight relay server for Clawchi. Each user deploys their own.
+ * Users are identified by their clawchiId (random anonymous string).
+ *
+ * Endpoints:
+ *   POST /state/:id  — AI agent writes current state + optional sub-agents
+ *   GET  /state/:id  — Chrome extension polls for latest state
+ *
+ * Storage:
+ *   Cloudflare KV with key "state:{clawchiId}"
+ *   All entries auto-expire after 5 minutes (300s TTL)
+ *
+ * Security:
+ *   - Optional AUTH_KEY for write protection
+ *   - Input validation on all fields (state, message, subAgents)
+ *   - CORS enabled for browser access
+ *   - No PII stored — only anonymous state data
+ *
+ * @module worker
  */
 
 const CORS_HEADERS = {

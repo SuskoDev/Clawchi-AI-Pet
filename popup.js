@@ -1,8 +1,29 @@
 /**
- * Clawchi Extension — Popup Script
- * Pixel-art crab pet with XP/levels, stats, sound, accessories,
- * multiple themes, time-of-day awareness, rare animations,
- * creature rarity, hydration reminders, and streak tracking.
+ * @file Clawchi Extension — Popup UI Script
+ * @version 0.1.0
+ * @author SuskoDev
+ * @license MIT
+ * @see {@link https://github.com/SuskoDev/Clawchi-AI-Pet}
+ *
+ * @description
+ * Main UI logic for the Clawchi browser action popup. Handles:
+ * - Pixel-art crab rendering via canvas-style SVG grid
+ * - XP/leveling system with streak tracking
+ * - Pet stats display (happiness, hunger, hydration)
+ * - 18 equippable accessories with pixel-art sprites
+ * - Drag & drop food feeding with munching animation
+ * - 8 crab color customization options
+ * - Theme switching (Ocean, Beach, Night)
+ * - Sound effects with volume control
+ * - Activity log for AI state changes
+ * - Agent Link section with relay URL config and prompt generation
+ * - Sub-agents panel (auto-populated from relay)
+ * - Time-of-day awareness and hydration reminders
+ * - Rare animation triggers
+ *
+ * @module popup
+ *
+ * No external dependencies. All rendering is vanilla JS + SVG.
  */
 
 // ── Constants ──

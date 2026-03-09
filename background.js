@@ -1,16 +1,29 @@
 /**
- * Clawchi Extension — Background Service Worker
- * Manages pet state, persists to storage, and handles messages.
- * Handles Desktop Mode content script registration.
+ * @file Clawchi Extension — Background Service Worker
+ * @version 0.1.0
+ * @author SuskoDev
+ * @license MIT
+ * @see {@link https://github.com/SuskoDev/Clawchi-AI-Pet}
+ *
+ * @description
+ * Core service worker for the Clawchi Chrome extension.
+ * Manages pet state, persists to chrome.storage.local, handles
+ * inter-script messaging, Desktop Mode content script injection,
+ * and relay polling for live AI status updates.
+ *
+ * @module background
  *
  * States:
- *   idle       — Agent is not doing anything
- *   thinking   — Agent is processing/reasoning
- *   working    — Agent is executing a task
- *   sleeping   — Agent is inactive/paused
- *   error      — Something went wrong
+ *   idle        — Agent is not doing anything
+ *   thinking    — Agent is processing/reasoning
+ *   working     — Agent is executing a task
+ *   sleeping    — Agent is inactive/paused
+ *   error       — Something went wrong
  *   celebrating — Task completed successfully
  *   needs-input — Agent needs user attention
+ *
+ * Data flow:
+ *   AI Agent → POST relay → this worker polls → broadcasts to content/popup
  */
 
 const DEFAULT_STATE = {

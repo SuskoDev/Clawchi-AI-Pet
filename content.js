@@ -1,8 +1,26 @@
 /**
- * Clawchi Extension — Content Script
+ * @file Clawchi Extension — Content Script (Desktop Mode)
+ * @version 0.1.0
+ * @author SuskoDev
+ * @license MIT
+ * @see {@link https://github.com/SuskoDev/Clawchi-AI-Pet}
+ *
+ * @description
  * Injects a pixel-art crab overlay onto web pages via Shadow DOM.
- * The crab sits at the bottom-right, walks left-right, idles,
- * falls asleep after 3 minutes, and wakes up on click/drag.
+ * The crab sits at the bottom-right corner, walks across the screen,
+ * idles, falls asleep after inactivity, and responds to click/drag.
+ *
+ * Features:
+ * - Full 2D drag support (crab can be placed anywhere on screen)
+ * - Walking animation across full screen width
+ * - Snap-to-taskbar when dropped near bottom edge
+ * - Sub-agent mini crabs that auto-spawn from relay data
+ * - State-driven animations synced with AI relay updates
+ *
+ * @module content
+ *
+ * Isolation: All DOM is inside a Shadow DOM host element to prevent
+ * style conflicts with the host page. No page content is read or modified.
  */
 
 (function() {
