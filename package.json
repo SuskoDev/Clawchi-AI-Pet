@@ -1,0 +1,33 @@
+{
+  "name": "clawchi-ai-pet",
+  "version": "0.1.0",
+  "description": "A Tamagotchi-style Chrome extension pixel-art crab that shows what your AI agent is doing in real time.",
+  "author": "SuskoDev",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SuskoDev/Clawchi-AI-Pet.git"
+  },
+  "homepage": "https://github.com/SuskoDev/Clawchi-AI-Pet",
+  "bugs": {
+    "url": "https://github.com/SuskoDev/Clawchi-AI-Pet/issues"
+  },
+  "keywords": [
+    "chrome-extension",
+    "tamagotchi",
+    "pixel-art",
+    "ai-agent",
+    "virtual-pet",
+    "crab",
+    "developer-tools",
+    "cloudflare-workers"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "deploy-relay": "cd cloudflare-worker && wrangler deploy",
+    "dev-relay": "cd cloudflare-worker && wrangler dev"
+  },
+  "private": true
+}
